@@ -3,141 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎯 ทดสอบ UI เรียบร้อย</title>
+  <title>Clean UI Test - Lucky Number System</title>
   <link rel="stylesheet" href="styles.css">
-  <style>
-    .test-section {
-      margin: 2rem 0;
-      padding: 1.5rem;
-      background: #f8f9fa;
-      border-radius: 15px;
-      border: 1px solid #dee2e6;
-    }
-    .status-info {
-      background: #d1ecf1;
-      border: 1px solid #bee5eb;
-      color: #0c5460;
-      padding: 1rem;
-      border-radius: 8px;
-      margin: 1rem 0;
-      text-align: center;
-    }
-  </style>
 </head>
 <body>
   <div class="container">
-    <h1>🎯 ทดสอบ UI เรียบร้อย</h1>
-    <p style="text-align: center; font-size: 1.1rem; color: #6c757d;">
-      แก้ไขปัญหากระพริบและการคลิกแล้ว - ทดสอบใหม่
-    </p>
-    
-    <div class="status-info">
-      <strong>✅ แก้ไขแล้ว:</strong> ลบ animations ที่กระพริบ, ลด !important, ปรับ z-index ให้เหมาะสม
-    </div>
-    
-    <div class="test-section">
-      <h2>🏅 ทดสอบระดับ "บารมี" (ต้องมี Badge ทอง)</h2>
-      <div class="numbers-grid">
-        <span class="number-item clickable" onclick="testLuckyNumber('999-999-9999', this)">
-          999-999-9999 (90)
-        </span>
-        <span class="number-item clickable" onclick="testLuckyNumber('888-888-8888', this)">
-          888-888-8888 (88)
-        </span>
-        <span class="number-item clickable" onclick="testLuckyNumber('100-000-0000', this)">
-          100-000-0000 (1)
-        </span>
-      </div>
-    </div>
-    
-    <div class="test-section">
-      <h2>💰 ทดสอบระดับ "เศรษฐี" (สีเขียว)</h2>
-      <div class="numbers-grid">
-        <span class="number-item clickable" onclick="testLuckyNumber('777-777-7777', this)">
-          777-777-7777 (77)
-        </span>
-        <span class="number-item clickable" onclick="testLuckyNumber('300-000-0000', this)">
-          300-000-0000 (3)
-        </span>
-      </div>
-    </div>
-    
-    <div class="test-section">
-      <h2>🍀 ทดสอบระดับ "วาสนา" (สีน้ำเงิน)</h2>
-      <div class="numbers-grid">
-        <span class="number-item clickable" onclick="testLuckyNumber('555-555-5555', this)">
-          555-555-5555 (50)
-        </span>
-        <span class="number-item clickable" onclick="testLuckyNumber('200-000-0000', this)">
-          200-000-0000 (2)
-        </span>
-      </div>
-    </div>
-    
-    <div class="test-section">
-      <h2>💜 ทดสอบระดับ "พอตัว" (สีม่วง)</h2>
-      <div class="numbers-grid">
-        <span class="number-item clickable" onclick="testLuckyNumber('444-444-4444', this)">
-          444-444-4444 (40)
-        </span>
-        <span class="number-item clickable" onclick="testLuckyNumber('333-333-3333', this)">
-          333-333-3333 (36)
-        </span>
-      </div>
-    </div>
-    
-    <div class="test-section">
-      <h2>⚠️ ทดสอบระดับ "ติดขัด" (สีแดง)</h2>
-      <div class="numbers-grid">
-        <span class="number-item clickable" onclick="testLuckyNumber('123-456-7890', this)">
-          123-456-7890 (45)
-        </span>
-        <span class="number-item clickable" onclick="testLuckyNumber('000-000-0004', this)">
-          000-000-0004 (4)
-        </span>
-      </div>
-    </div>
-    
-    <div class="test-section">
-      <h2>🎨 ทดสอบปุ่มใหม่</h2>
-      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-        <button class="btn btn-primary">🚀 ปุ่มหลัก</button>
-        <button class="btn btn-secondary">📋 ปุ่มรอง</button>
-      </div>
-    </div>
+    <header>
+      <h1>Account Number Generator</h1>
+      <div class="subtitle">Clean UI Test</div>
+    </header>
+
+    <main>
+      <section class="results-section">
+        <div class="results-header">
+          <h2>ผลลัพธ์ทดสอบ</h2>
+          <button class="btn btn-secondary">Export เป็น CSV</button>
+        </div>
+        
+        <div class="numbers-grid">
+          <div class="number-item">
+            <span>123-456-7890</span>
+          </div>
+          <div class="number-item premium-baramee">
+            <span>888-888-8888</span>
+            <div class="main-result-badge">🏅</div>
+          </div>
+          <div class="number-item">
+            <span>555-123-4567</span>
+          </div>
+          <div class="number-item premium-baramee">
+            <span>999-999-9999</span>
+            <div class="main-result-badge">🏅</div>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
 
-  <!-- Lucky Number Analysis Popup -->
-  <div id="lucky-overlay" class="lucky-overlay">
+  <!-- Lucky Number Popup Test -->
+  <div id="lucky-overlay" class="lucky-overlay show">
     <div class="lucky-popup">
       <div class="lucky-header">
         <h3>🔮 ผลรวมเลขมงคล</h3>
-        <button id="close-lucky-btn" class="close-btn">&times;</button>
+        <button class="close-btn">&times;</button>
       </div>
       
       <div class="lucky-body">
         <div class="selected-number">
           <label>หมายเลขบัญชีที่เลือก:</label>
-          <div id="selected-account-number" class="account-number-display">-</div>
+          <div class="account-number-display">888-888-8888</div>
         </div>
         
         <div class="lucky-analysis">
           <div class="sum-section">
             <div class="circular-badge-container">
-              <div id="circular-badge" class="circular-badge">
+              <div class="circular-badge">
                 <div class="badge-label">ผลรวม</div>
-                <div id="digit-sum" class="digit-sum-large">-</div>
+                <div class="digit-sum-large">64</div>
               </div>
-              <div id="rating-badge" class="rating-badge-floating">-</div>
+              <div class="rating-badge-floating supreme">บารมี</div>
             </div>
             <div class="rating-description-center">
-              <div id="rating-description" class="rating-description">-</div>
+              <div class="rating-description">เลขมงคลระดับสูงสุด มีพลังแห่งความสำเร็จ</div>
             </div>
           </div>
           
           <div class="personality-section">
             <h4>👤 บุคลิกภาพและความหมาย</h4>
-            <div id="personality-section" class="personality-display">-</div>
+            <div class="personality-display">
+              <div class="personality-item">
+                <strong>บุคลิกภาพ:</strong> 
+                <span>เป็นผู้นำที่มีเสน่ห์ มีความมั่นใจสูง และสามารถสร้างแรงบันดาลใจให้ผู้อื่น</span>
+              </div>
+              <div class="meaning-item">
+                <strong>ความหมาย:</strong> 
+                <span>ความสำเร็จ ความมั่งคั่ง และการเป็นที่ยอมรับในสังคม</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="zodiac-section">
+            <h4>♈ ราศีที่เข้ากัน</h4>
+            <div class="zodiac-display">
+              <div class="zodiac-item">
+                <span class="zodiac-icon">♌</span>
+                <span class="zodiac-name">ราศีสิงห์</span>
+              </div>
+              <div class="zodiac-item">
+                <span class="zodiac-icon">♈</span>
+                <span class="zodiac-name">ราศีเมษ</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="career-section">
+            <h4>💼 อาชีพที่เหมาะสม</h4>
+            <div class="career-list">
+              <div class="career-tag">ผู้บริหาร</div>
+              <div class="career-tag">นักการเมือง</div>
+              <div class="career-tag">นักธุรกิจ</div>
+              <div class="career-tag">ผู้นำองค์กร</div>
+            </div>
           </div>
           
           <div class="star-ratings-section">
@@ -145,139 +111,102 @@
             <div class="star-ratings-grid">
               <div class="rating-category">
                 <div class="category-label">การงาน</div>
-                <div id="career-stars" class="stars-container">
-                  <span class="star">☆</span><span class="star">☆</span><span class="star">☆</span><span class="star">☆</span><span class="star">☆</span>
+                <div class="stars-container">
+                  <div class="star-rating">
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                  </div>
                 </div>
               </div>
+              
               <div class="rating-category">
                 <div class="category-label">การเงิน</div>
-                <div id="money-stars" class="stars-container">
-                  <span class="star">☆</span><span class="star">☆</span><span class="star">☆</span><span class="star">☆</span><span class="star">☆</span>
+                <div class="stars-container">
+                  <div class="star-rating">
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star empty">☆</span>
+                  </div>
                 </div>
               </div>
+              
               <div class="rating-category">
                 <div class="category-label">สุขภาพ</div>
-                <div id="health-stars" class="stars-container">
-                  <span class="star">☆</span><span class="star">☆</span><span class="star">☆</span><span class="star">☆</span><span class="star">☆</span>
+                <div class="stars-container">
+                  <div class="star-rating">
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star empty">☆</span>
+                    <span class="star empty">☆</span>
+                  </div>
                 </div>
               </div>
+              
               <div class="rating-category">
                 <div class="category-label">ความรัก</div>
-                <div id="love-stars" class="stars-container">
-                  <span class="star">☆</span><span class="star">☆</span><span class="star">☆</span><span class="star">☆</span><span class="star">☆</span>
+                <div class="stars-container">
+                  <div class="star-rating">
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star filled">★</span>
+                    <span class="star empty">☆</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           
-          <div class="zodiac-section">
-            <h4>♈ ราศีที่เข้ากัน</h4>
-            <div id="compatible-zodiac" class="zodiac-display">-</div>
-          </div>
-          
-          <div class="career-section">
-            <h4>💼 อาชีพที่เหมาะสม</h4>
-            <div id="suitable-careers" class="career-display">-</div>
-          </div>
-          
           <div class="lucky-info-section">
             <h4>🍀 ข้อมูลเพิ่มเติม</h4>
-            <div id="lucky-info" class="lucky-info-display">-</div>
+            <div class="lucky-info-display">
+              <div class="lucky-item">
+                <strong>🍀 โชคดี:</strong> 
+                <span>วันพฤหัสบดี เวลา 09:00-11:00 น.</span>
+              </div>
+              <div class="warning-item">
+                <strong>⚠️ ข้อควรระวัง:</strong> 
+                <span>อย่าตัดสินใจสำคัญในวันอังคาร</span>
+              </div>
+              <div class="color-item">
+                <strong>🎨 สีมงคล:</strong> 
+                <span>สีทอง สีแดง สีส้ม</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       
       <div class="lucky-footer">
-        <button id="copy-number-btn" class="btn btn-secondary">📋 คัดลอกหมายเลข</button>
-        <button id="close-lucky-footer-btn" class="btn btn-primary">ปิด</button>
-      </div>
-      
-      <div class="attribution">
-        <small>ระบบเลขศาสตร์ 5 ระดับ - เรียบร้อยแล้ว ✅</small>
+        <div class="button-row">
+          <button class="btn btn-primary">📋 คัดลอกเลข</button>
+          <button class="btn btn-secondary">ปิด</button>
+        </div>
+        <div class="attribution">
+          <small>ระบบเลขศาสตร์ไทยแบบดั้งเดิม อิงตามหลักการเลขศาสตร์สากล</small>
+        </div>
       </div>
     </div>
   </div>
 
-  <script src="lucky-number-system.js"></script>
   <script>
-    function testLuckyNumber(accountNumber, element) {
-      console.log('🎯 Testing clean UI for:', accountNumber);
-      
-      // Add badge to main results - CLEAN VERSION
-      addBadgeToMainResults(accountNumber, element);
-      
-      if (window.luckyNumberUI) {
-        window.luckyNumberUI.showLuckyPopup(accountNumber);
-      } else {
-        setTimeout(() => {
-          if (window.luckyNumberUI) {
-            window.luckyNumberUI.showLuckyPopup(accountNumber);
-          } else {
-            alert('ระบบยังไม่พร้อม กรุณาลองใหม่อีกครั้ง');
-          }
-        }, 500);
-      }
-    }
-    
-    function addBadgeToMainResults(accountNumber, element) {
-      if (window.luckyNumberUI && window.luckyNumberUI.analyzer) {
-        const analysis = window.luckyNumberUI.analyzer.analyzeNumber(accountNumber);
-        
-        if (analysis.rating.level === 'บารมี' && !element.querySelector('.main-result-badge')) {
-          // Ensure element has relative positioning
-          element.style.position = 'relative';
-          
-          // Create badge element
-          const badge = document.createElement('span');
-          badge.className = 'main-result-badge';
-          badge.innerHTML = '🏅';
-          badge.style.position = 'absolute';
-          badge.style.top = '-8px';
-          badge.style.right = '-8px';
-          badge.style.width = '24px';
-          badge.style.height = '24px';
-          badge.style.background = 'linear-gradient(135deg, #FFD700, #FFA500)';
-          badge.style.borderRadius = '50%';
-          badge.style.display = 'flex';
-          badge.style.alignItems = 'center';
-          badge.style.justifyContent = 'center';
-          badge.style.fontSize = '1rem';
-          badge.style.zIndex = '100';
-          badge.style.boxShadow = '0 2px 8px rgba(255, 215, 0, 0.6)';
-          badge.style.border = '2px solid #fff';
-          badge.style.pointerEvents = 'none';
-          
-          element.appendChild(badge);
-          element.classList.add('premium-baramee');
-          
-          console.log('✅ Badge added to:', accountNumber);
-        }
-      }
-    }
-    
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('🎯 Clean UI Test Page Loaded');
-      
-      setTimeout(() => {
-        initializeMainResultsBadges();
-      }, 1000);
+    // Close popup when clicking close button
+    document.querySelector('.close-btn').addEventListener('click', function() {
+      document.getElementById('lucky-overlay').classList.remove('show');
     });
     
-    function initializeMainResultsBadges() {
-      const numberItems = document.querySelectorAll('.number-item.clickable');
-      console.log('🔍 Initializing badges for', numberItems.length, 'items');
-      
-      numberItems.forEach(element => {
-        const onclick = element.getAttribute('onclick');
-        if (onclick) {
-          const match = onclick.match(/testLuckyNumber\('([^']+)'/);
-          if (match) {
-            const accountNumber = match[1];
-            addBadgeToMainResults(accountNumber, element);
-          }
-        }
-      });
-    }
+    // Close popup when clicking outside
+    document.getElementById('lucky-overlay').addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.remove('show');
+      }
+    });
   </script>
 </body>
 </html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horizontal Pattern Layout Test</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Account Number Generator</h1>
+      <div class="subtitle">Horizontal Pattern Layout Test</div>
+    </header>
+
+    <main>
+      <!-- Pattern Selection Area -->
+      <section class="input-section">
+        <h2>เลือก Pattern</h2>
+        <div class="input-group">
+          <label for="pattern-select">เลือก Pattern Type:</label>
+          <select id="pattern-select">
+            <option value="">-- เลือก Pattern --</option>
+            <optgroup label="1. The Soloist">
+              <option value="aaaaaaaaaa" data-type="The Soloist">aaa-aaa-aaaa (All 10 digits identical)</option>
+              <option value="?bbbbbbbbb" data-type="The Soloist">?bb-bbb-bbbb (All 9 digits identical)</option>
+            </optgroup>
+            <optgroup label="2. Hyphen-separated">
+              <option value="bbbaaaaaaa" data-type="Hyphen-separated">bbb-aaa-aaaa (2 distinct digits across blocks)</option>
+              <option value="aaabbbcccc" data-type="Hyphen-separated">aaa-bbb-cccc (3 distinct digits across blocks)</option>
+            </optgroup>
+          </select>
+          <small>เลือก pattern จากรายการที่กำหนดไว้</small>
+          <button class="btn btn-primary">เพิ่ม Pattern</button>
+        </div>
+      </section>
+
+      <!-- Pattern List Section - Horizontal Layout -->
+      <section class="pattern-list-section">
+        <h2>Patterns ที่เพิ่มแล้ว</h2>
+        <div class="pattern-list">
+          
+          <!-- Pattern Item 1 - Horizontal Layout -->
+          <div class="pattern-item">
+            <div class="pattern-info">
+              <div class="pattern-text">aaaaaaaaaa</div>
+              <div class="pattern-type">The Soloist</div>
+            </div>
+            <div class="pattern-actions">
+              <div class="pattern-count">10 numbers</div>
+              <button class="remove-pattern-btn">ลบ</button>
+            </div>
+          </div>
+
+          <!-- Pattern Item 2 - Horizontal Layout -->
+          <div class="pattern-item">
+            <div class="pattern-info">
+              <div class="pattern-text">bbbaaaaaaa</div>
+              <div class="pattern-type">Hyphen-separated</div>
+            </div>
+            <div class="pattern-actions">
+              <div class="pattern-count">90 numbers</div>
+              <button class="remove-pattern-btn">ลบ</button>
+            </div>
+          </div>
+
+          <!-- Pattern Item 3 - Horizontal Layout -->
+          <div class="pattern-item">
+            <div class="pattern-info">
+              <div class="pattern-text">abcdefghij</div>
+              <div class="pattern-type">The Full Straight</div>
+            </div>
+            <div class="pattern-actions">
+              <div class="pattern-count">2 numbers</div>
+              <button class="remove-pattern-btn">ลบ</button>
+            </div>
+          </div>
+
+          <!-- Pattern Item 4 - Horizontal Layout -->
+          <div class="pattern-item">
+            <div class="pattern-info">
+              <div class="pattern-text">06????????</div>
+              <div class="pattern-type">Thai Mobile No.</div>
+            </div>
+            <div class="pattern-actions">
+              <div class="pattern-count">100M numbers</div>
+              <button class="remove-pattern-btn">ลบ</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Results Area -->
+      <section class="results-section">
+        <div class="results-header">
+          <h2>ผลลัพธ์</h2>
+          <button class="btn btn-secondary">Export เป็น CSV</button>
+        </div>
+        
+        <div class="numbers-grid">
+          <div class="number-item">
+            <span>123-456-7890</span>
+          </div>
+          <div class="number-item premium-baramee">
+            <span>888-888-8888</span>
+            <div class="main-result-badge">🏅</div>
+          </div>
+          <div class="number-item">
+            <span>555-123-4567</span>
+          </div>
+          <div class="number-item">
+            <span>777-777-7777</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 Saharat Paovarangkul</p>
+    </footer>
+  </div>
+
+  <script>
+    // Add hover effects and interactions
+    document.querySelectorAll('.pattern-item').forEach(item => {
+      item.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-2px)';
+      });
+      
+      item.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+      });
+    });
+
+    // Remove button functionality
+    document.querySelectorAll('.remove-pattern-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const patternItem = this.closest('.pattern-item');
+        patternItem.style.animation = 'fadeOut 0.3s ease-out forwards';
+        setTimeout(() => {
+          patternItem.remove();
+        }, 300);
+      });
+    });
+  </script>
+
+  <style>
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+    }
+  </style>
+</body>
+</html>

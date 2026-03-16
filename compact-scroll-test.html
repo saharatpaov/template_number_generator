@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compact Layout with Scroll Test</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Account Number Generator</h1>
+      <div class="subtitle">Compact Layout with Scroll Test</div>
+    </header>
+
+    <main>
+      <!-- Pattern Selection Area -->
+      <section class="input-section">
+        <h2>เลือก Pattern</h2>
+        <div class="input-group">
+          <label for="pattern-select">เลือก Pattern Type:</label>
+          <select id="pattern-select">
+            <option value="">-- เลือก Pattern --</option>
+            <optgroup label="1. The Soloist">
+              <option value="aaaaaaaaaa" data-type="The Soloist">aaa-aaa-aaaa (All 10 digits identical)</option>
+              <option value="?bbbbbbbbb" data-type="The Soloist">?bb-bbb-bbbb (All 9 digits identical)</option>
+            </optgroup>
+          </select>
+          <small>เลือก pattern จากรายการที่กำหนดไว้</small>
+          <button class="btn btn-primary">เพิ่ม Pattern</button>
+        </div>
+      </section>
+
+      <!-- Pattern List Section - Compact with Scroll -->
+      <section class="pattern-list-section">
+        <h2>Patterns ที่เพิ่มแล้ว</h2>
+        <div class="pattern-list">
+          
+          <!-- Multiple Pattern Items to Test Scroll -->
+          <div class="pattern-item">
+            <div class="pattern-info">
+              <div class="pattern-text">aaaaaaaaaa</div>
+              <div class="pattern-type">The Soloist</div>
+            </div>
+            <div class="pattern-actions">
+              <div class="pattern-count">10 numbers</div>
+              <button class="remove-pattern-btn">ลบ</button>
+            </div>
+          </div>
+
+          <div class="pattern-item">
+            <div class="pattern-info">
+              <div class="pattern-text">bbbaaaaaaa</div>
+              <div class="pattern-type">Hyphen-separated</div>
+            </div>
+            <div class="pattern-actions">
+              <div class="pattern-count">90 numbers</div>
+              <button class="remove-pattern-btn">ลบ</button>
+            </div>
+          </div>
+
+          <div class="pattern-item">
+            <div class="pattern-info">
+              <div class="pattern-text">abcdefghij</div>
+              <div class="pattern-type">The Full Straight</div>
+            </div>
+            <div class="pattern-actions">
+              <div class="pattern-count">2 numbers</div>
+              <button class="remove-pattern-btn">ลบ</button>
+            </div>
+          </div>
+
+          <div class="pattern-item">
+            <div class="pattern-info">
+              <div class="pattern-text">06????????</div>
+              <div class="pattern-type">Thai Mobile No.</div>
+            </div>
+            <div class="pattern-actions">
+              <div class="pattern-count">100M numbers</div>
+              <button class="remove-pattern-btn">ลบ</button>
+            </div>
+          </div>
+
+          <div class="pattern-item">
+            <div class="pattern-info">
+              <div class="pattern-text">zabcdefghi</div>
+              <div class="pattern-type">Cyclic Straight</div>
+            </div>
+            <div class="pattern-actions">
+              <div class="pattern-count">20 numbers</div>
+              <button class="remove-pattern-btn">ลบ</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Results Area - Compact with Scroll -->
+      <section class="results-section">
+        <div class="results-header">
+          <h2>ผลลัพธ์</h2>
+          <button class="btn btn-secondary">Export เป็น CSV</button>
+        </div>
+        
+        <div class="results-display">
+          
+          <!-- Result Group 1 - Compact Layout -->
+          <div class="result-group">
+            <h3>aaaaaaaaaa (The Soloist) - 10 numbers</h3>
+            
+            <!-- Numbers Grid - Compact with Scroll -->
+            <div class="numbers-grid">
+              <div class="number-item clickable">000-000-0000</div>
+              <div class="number-item clickable">111-111-1111</div>
+              <div class="number-item clickable">222-222-2222</div>
+              <div class="number-item clickable">333-333-3333</div>
+              <div class="number-item clickable">444-444-4444</div>
+              <div class="number-item clickable">555-555-5555</div>
+              <div class="number-item clickable">666-666-6666</div>
+              <div class="number-item clickable">777-777-7777</div>
+              <div class="number-item clickable premium-baramee">
+                888-888-8888
+                <div class="main-result-badge">🏅</div>
+              </div>
+              <div class="number-item clickable">999-999-9999</div>
+            </div>
+          </div>
+
+          <!-- Result Group 2 - More Results to Test Scroll -->
+          <div class="result-group">
+            <h3>bbbaaaaaaa (Hyphen-separated) - 90 numbers</h3>
+            
+            <div class="numbers-grid">
+              <div class="number-item clickable">100-000-0000</div>
+              <div class="number-item clickable">200-000-0000</div>
+              <div class="number-item clickable">300-000-0000</div>
+              <div class="number-item clickable">400-000-0000</div>
+              <div class="number-item clickable">500-000-0000</div>
+              <div class="number-item clickable">600-000-0000</div>
+              <div class="number-item clickable">700-000-0000</div>
+              <div class="number-item clickable">800-000-0000</div>
+              <div class="number-item clickable">900-000-0000</div>
+              <div class="number-item clickable">101-111-1111</div>
+              <div class="number-item clickable">202-222-2222</div>
+              <div class="number-item clickable">303-333-3333</div>
+              <div class="number-item clickable">404-444-4444</div>
+              <div class="number-item clickable">505-555-5555</div>
+              <div class="number-item clickable">606-666-6666</div>
+              <div class="number-item clickable">707-777-7777</div>
+              <div class="number-item clickable">808-888-8888</div>
+              <div class="number-item clickable">909-999-9999</div>
+            </div>
+            
+            <div class="pagination-section">
+              <div class="pagination-range-info">แสดงรายการที่ 1 - 18 จากทั้งหมด 90 รายการ</div>
+              <div class="page-input-container">
+                <span>ไปหน้า: </span>
+                <input type="number" class="page-input" min="1" max="5" value="1">
+                <span> จาก 5</span>
+              </div>
+              <div class="pagination-controls">
+                <button class="btn-pagination active">1</button>
+                <button class="btn-pagination">2</button>
+                <button class="btn-pagination">3</button>
+                <button class="btn-pagination">4</button>
+                <button class="btn-pagination">5</button>
+                <button class="btn-pagination">ถัดไป »</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 Saharat Paovarangkul</p>
+    </footer>
+  </div>
+
+  <script>
+    // Number click functionality
+    document.querySelectorAll('.number-item.clickable').forEach(item => {
+      item.addEventListener('click', function() {
+        const number = this.textContent.trim().replace('🏅', '');
+        alert(`คลิกเลข: ${number}`);
+      });
+    });
+
+    // Remove pattern functionality
+    document.querySelectorAll('.remove-pattern-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const patternItem = this.closest('.pattern-item');
+        patternItem.style.animation = 'fadeOut 0.3s ease-out forwards';
+        setTimeout(() => {
+          patternItem.remove();
+        }, 300);
+      });
+    });
+
+    // Pagination functionality
+    document.querySelectorAll('.btn-pagination').forEach(btn => {
+      btn.addEventListener('click', function() {
+        if (this.textContent.includes('ถัดไป') || this.textContent.includes('ก่อนหน้า')) {
+          return;
+        }
+        
+        // Remove active class from all buttons
+        document.querySelectorAll('.btn-pagination').forEach(b => b.classList.remove('active'));
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Update page input
+        const pageInput = document.querySelector('.page-input');
+        if (pageInput && !isNaN(this.textContent)) {
+          pageInput.value = this.textContent;
+        }
+      });
+    });
+  </script>
+
+  <style>
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+    }
+  </style>
+</body>
+</html>

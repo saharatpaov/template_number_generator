@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Results Table Test - Beautiful UI</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Account Number Generator</h1>
+      <div class="subtitle">Results Table & Pattern List Test</div>
+    </header>
+
+    <main>
+      <!-- Pattern Selection Area -->
+      <section class="input-section">
+        <h2>เลือก Pattern</h2>
+        <div class="input-group">
+          <label for="pattern-select">เลือก Pattern Type:</label>
+          <select id="pattern-select">
+            <option value="">-- เลือก Pattern --</option>
+            <optgroup label="1. The Soloist">
+              <option value="aaaaaaaaaa" data-type="The Soloist">aaa-aaa-aaaa (All 10 digits identical)</option>
+            </optgroup>
+          </select>
+          <small>เลือก pattern จากรายการที่กำหนดไว้</small>
+          <button class="btn btn-primary">เพิ่ม Pattern</button>
+        </div>
+      </section>
+
+      <!-- Pattern List Section -->
+      <section class="pattern-list-section">
+        <h2>Patterns ที่เพิ่มแล้ว</h2>
+        <div class="pattern-list">
+          
+          <!-- Pattern Item 1 -->
+          <div class="pattern-item">
+            <div class="pattern-info">
+              <div class="pattern-text">aaa-aaa-aaaa</div>
+              <div class="pattern-type">The Soloist</div>
+            </div>
+            <div class="pattern-actions">
+              <div class="pattern-count">10 รายการ</div>
+              <button class="remove-pattern-btn">🗑️ ลบ</button>
+            </div>
+          </div>
+
+          <!-- Pattern Item 2 -->
+          <div class="pattern-item">
+            <div class="pattern-info">
+              <div class="pattern-text">bbbaaaaaaa</div>
+              <div class="pattern-type">Hyphen-separated</div>
+            </div>
+            <div class="pattern-actions">
+              <div class="pattern-count">90 รายการ</div>
+              <button class="remove-pattern-btn">🗑️ ลบ</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+      <!-- Results Area -->
+      <section class="results-section">
+        <div class="results-header">
+          <h2>ผลลัพธ์</h2>
+          <div class="view-toggle">
+            <button class="view-toggle-btn active" onclick="switchView('grid')">📱 Grid View</button>
+            <button class="view-toggle-btn" onclick="switchView('table')">📊 Table View</button>
+          </div>
+          <button class="btn btn-secondary">Export เป็น CSV</button>
+        </div>
+        
+        <div class="results-display">
+          
+          <!-- Result Group 1 -->
+          <div class="result-group">
+            <h3>aaa-aaa-aaaa (The Soloist) - 10 numbers</h3>
+            
+            <!-- Grid View (Default) -->
+            <div id="grid-view" class="numbers-grid">
+              <div class="number-item clickable premium">
+                <span>888-888-8888</span>
+                <div class="main-result-badge">🏅</div>
+              </div>
+              <div class="number-item clickable">
+                <span>777-777-7777</span>
+              </div>
+              <div class="number-item clickable">
+                <span>666-666-6666</span>
+              </div>
+              <div class="number-item clickable">
+                <span>555-555-5555</span>
+              </div>
+              <div class="number-item clickable">
+                <span>444-444-4444</span>
+              </div>
+              <div class="number-item clickable">
+                <span>333-333-3333</span>
+              </div>
+            </div>
+            
+            <!-- Table View (Hidden by default) -->
+            <div id="table-view" style="display: none;">
+              <table class="results-table">
+                <thead>
+                  <tr>
+                    <th>หมายเลขบัญชี</th>
+                    <th>ผลรวม</th>
+                    <th>ระดับ</th>
+                    <th>Badge</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="number-cell" onclick="showLuckyPopup('888-888-8888')">888-888-8888</td>
+                    <td class="sum-cell">64</td>
+                    <td class="rating-cell" style="color: #FFD700; font-weight: bold;">บารมี</td>
+                    <td class="badge-cell">🏅</td>
+                  </tr>
+                  <tr>
+                    <td class="number-cell" onclick="showLuckyPopup('777-777-7777')">777-777-7777</td>
+                    <td class="sum-cell">49</td>
+                    <td class="rating-cell" style="color: #4caf50;">เศรษฐี</td>
+                    <td class="badge-cell">-</td>
+                  </tr>
+                  <tr>
+                    <td class="number-cell" onclick="showLuckyPopup('666-666-6666')">666-666-6666</td>
+                    <td class="sum-cell">36</td>
+                    <td class="rating-cell" style="color: #2196f3;">วาสนา</td>
+                    <td class="badge-cell">-</td>
+                  </tr>
+                  <tr>
+                    <td class="number-cell" onclick="showLuckyPopup('555-555-5555')">555-555-5555</td>
+                    <td class="sum-cell">25</td>
+                    <td class="rating-cell" style="color: #9c27b0;">พอตัว</td>
+                    <td class="badge-cell">-</td>
+                  </tr>
+                  <tr>
+                    <td class="number-cell" onclick="showLuckyPopup('444-444-4444')">444-444-4444</td>
+                    <td class="sum-cell">16</td>
+                    <td class="rating-cell" style="color: #f44336;">ติดขัด</td>
+                    <td class="badge-cell">-</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination-section">
+              <div class="pagination-range-info">แสดงรายการที่ 1 - 10 จากทั้งหมด 10 รายการ</div>
+              <div class="pagination-controls">
+                <button class="btn-pagination active">1</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 Saharat Paovarangkul</p>
+    </footer>
+  </div>
+
+  <script>
+    function switchView(viewType) {
+      const gridView = document.getElementById('grid-view');
+      const tableView = document.getElementById('table-view');
+      const buttons = document.querySelectorAll('.view-toggle-btn');
+      
+      // Remove active class from all buttons
+      buttons.forEach(btn => btn.classList.remove('active'));
+      
+      if (viewType === 'grid') {
+        gridView.style.display = 'grid';
+        tableView.style.display = 'none';
+        buttons[0].classList.add('active');
+      } else {
+        gridView.style.display = 'none';
+        tableView.style.display = 'block';
+        buttons[1].classList.add('active');
+      }
+    }
+    
+    function showLuckyPopup(number) {
+      alert(`แสดงข้อมูลเลขมงคลสำหรับ: ${number}`);
+    }
+  </script>
+</body>
+</html>

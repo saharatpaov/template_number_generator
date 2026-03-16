@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clean Results Layout Test</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Account Number Generator</h1>
+      <div class="subtitle">Clean Results Layout Test</div>
+    </header>
+
+    <main>
+      <!-- Pattern List Section - Horizontal Layout -->
+      <section class="pattern-list-section">
+        <h2>Patterns ที่เพิ่มแล้ว</h2>
+        <div class="pattern-list">
+          
+          <!-- Pattern Item 1 - Horizontal Layout -->
+          <div class="pattern-item">
+            <div class="pattern-info">
+              <div class="pattern-text">aaaaaaaaaa</div>
+              <div class="pattern-type">The Soloist</div>
+            </div>
+            <div class="pattern-actions">
+              <div class="pattern-count">10 numbers</div>
+              <button class="remove-pattern-btn">ลบ</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Results Area - Clean Layout -->
+      <section class="results-section">
+        <div class="results-header">
+          <h2>ผลลัพธ์</h2>
+          <button class="btn btn-secondary">Export เป็น CSV</button>
+        </div>
+        
+        <div class="results-display">
+          
+          <!-- Result Group 1 - Clean Layout -->
+          <div class="result-group">
+            <h3>aaaaaaaaaa (The Soloist) - 10 numbers</h3>
+            
+            <!-- Numbers Grid - Clean Layout -->
+            <div class="numbers-grid">
+              <div class="number-item clickable">
+                <span>000-000-0000</span>
+              </div>
+              <div class="number-item clickable">
+                <span>111-111-1111</span>
+              </div>
+              <div class="number-item clickable">
+                <span>222-222-2222</span>
+              </div>
+              <div class="number-item clickable">
+                <span>333-333-3333</span>
+              </div>
+              <div class="number-item clickable">
+                <span>444-444-4444</span>
+              </div>
+              <div class="number-item clickable">
+                <span>555-555-5555</span>
+              </div>
+              <div class="number-item clickable">
+                <span>666-666-6666</span>
+              </div>
+              <div class="number-item clickable">
+                <span>777-777-7777</span>
+              </div>
+              <div class="number-item clickable premium-baramee">
+                <span>888-888-8888</span>
+                <div class="main-result-badge">🏅</div>
+              </div>
+              <div class="number-item clickable">
+                <span>999-999-9999</span>
+              </div>
+            </div>
+            
+            <!-- Pagination - Simplified -->
+            <div class="pagination-section">
+              <div class="pagination-range-info">แสดงรายการที่ 1 - 10 จากทั้งหมด 10 รายการ</div>
+              <div class="pagination-controls">
+                <button class="btn-pagination active">1</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 Saharat Paovarangkul</p>
+    </footer>
+  </div>
+
+  <!-- Lucky Number Analysis Popup -->
+  <div id="lucky-overlay" class="lucky-overlay">
+    <div class="lucky-popup">
+      <div class="lucky-header">
+        <h3>🔮 ผลรวมเลขมงคล</h3>
+        <button id="close-lucky-btn" class="close-btn">&times;</button>
+      </div>
+      
+      <div class="lucky-body">
+        <div class="selected-number">
+          <label>หมายเลขบัญชีที่เลือก:</label>
+          <div id="selected-account-number" class="account-number-display">888-888-8888</div>
+        </div>
+        
+        <div class="lucky-analysis">
+          <div class="sum-section">
+            <div class="circular-badge-container">
+              <div id="circular-badge" class="circular-badge">
+                <div class="badge-label">ผลรวม</div>
+                <div id="digit-sum" class="digit-sum-large">64</div>
+              </div>
+              <div id="rating-badge" class="rating-badge-floating supreme">บารมี</div>
+            </div>
+            <div class="rating-description-center">
+              <div id="rating-description" class="rating-description">เลขมงคลระดับสูงสุด มีพลังแห่งความสำเร็จ</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="lucky-footer">
+        <div class="button-row">
+          <button id="copy-number-btn" class="btn btn-primary">📋 คัดลอกเลข</button>
+          <button id="close-lucky-footer-btn" class="btn btn-secondary">ปิด</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Number click functionality
+    document.querySelectorAll('.number-item.clickable').forEach(item => {
+      item.addEventListener('click', function() {
+        const number = this.querySelector('span').textContent;
+        showLuckyPopup(number);
+      });
+    });
+
+    function showLuckyPopup(number) {
+      document.getElementById('selected-account-number').textContent = number;
+      document.getElementById('lucky-overlay').classList.add('show');
+    }
+
+    // Close popup functionality
+    document.getElementById('close-lucky-btn').addEventListener('click', function() {
+      document.getElementById('lucky-overlay').classList.remove('show');
+    });
+
+    document.getElementById('close-lucky-footer-btn').addEventListener('click', function() {
+      document.getElementById('lucky-overlay').classList.remove('show');
+    });
+
+    // Close popup when clicking outside
+    document.getElementById('lucky-overlay').addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.remove('show');
+      }
+    });
+
+    // Remove pattern functionality
+    document.querySelectorAll('.remove-pattern-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const patternItem = this.closest('.pattern-item');
+        patternItem.style.animation = 'fadeOut 0.3s ease-out forwards';
+        setTimeout(() => {
+          patternItem.remove();
+        }, 300);
+      });
+    });
+  </script>
+
+  <style>
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+    }
+  </style>
+</body>
+</html>
