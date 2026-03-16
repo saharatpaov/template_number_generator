@@ -1464,13 +1464,29 @@ class PatternGenerator {
     const block2AllSame = this._isAllSameInBlock(block2);
     const block3AllSame = this._isAllSameInBlock(block3);
 
-    // Type 3: "aaabbbcccc" - all blocks different (3 distinct digits)
+    // Type 4: "bbbaaabbbb" - first and last blocks same letter, different lengths (3+3+4)
     if (block1AllSame && block2AllSame && block3AllSame) {
       const block1Letter = block1.replace(/\?/g, '')[0];
       const block2Letter = block2.replace(/\?/g, '')[0];
       const block3Letter = block3.replace(/\?/g, '')[0];
       
-      // Check if all blocks are different
+      // Check for bbbaaabbbb pattern (first and last blocks same letter, middle different)
+      if (block1Letter === block3Letter && block1Letter !== block2Letter) {
+        // 10 choices for b digit × 9 choices for a digit (≠b) = 90 combinations
+        for (let bDigit = 0; bDigit <= 9; bDigit++) {
+          for (let aDigit = 0; aDigit <= 9; aDigit++) {
+            if (aDigit !== bDigit) {
+              const number = bDigit.toString().repeat(3) + 
+                            aDigit.toString().repeat(3) + 
+                            bDigit.toString().repeat(4);
+              results.push(this.formatNumber(number));
+            }
+          }
+        }
+        return results;
+      }
+      
+      // Check if all blocks are different (original aaabbbcccc logic)
       if (block1Letter !== block2Letter && block2Letter !== block3Letter && block1Letter !== block3Letter) {
         // 10 × 9 × 8 = 720 combinations
         for (let digit1 = 0; digit1 <= 9; digit1++) {
@@ -1491,7 +1507,7 @@ class PatternGenerator {
       }
     }
     
-    // Type 4: "bbb???bbbb" - first and last blocks same, middle different
+    // Type 5: "bbb???bbbb" - first and last blocks same, middle different (with wildcards)
     const block1Letter = block1.replace(/\?/g, '')[0];
     const block3Letter = block3.replace(/\?/g, '')[0];
     
