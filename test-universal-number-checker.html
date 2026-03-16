@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Universal Number Checker</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>Universal Number Checker</h1>
+        <p class="subtitle">ตรวจสอบหมายเลขกับทุก pattern โดยอัตโนมัติ</p>
+      </div>
+    </header>
+
+    <main>
+      <!-- Number Checker Section -->
+      <section class="number-checker-section">
+        <h2>🔍 ตรวจสอบหมายเลข</h2>
+        <div class="checker-group">
+          <label for="number-input">กรอกหมายเลข 10 หลัก:</label>
+          <div class="checker-input-row">
+            <input type="text" id="number-input" class="form-control" placeholder="กรอกหมายเลข 10 หลัก เช่น 1234567890" maxlength="10">
+            <button id="check-number-btn" class="btn btn-secondary">🔍 ตรวจสอบ</button>
+          </div>
+          <small class="input-help">ระบบจะตรวจสอบกับทุก pattern ที่รองรับโดยอัตโนมัติ ไม่ต้องเพิ่ม pattern ก่อน</small>
+        </div>
+        <div id="checker-result" class="checker-result" style="display: none;"></div>
+      </section>
+
+      <!-- Test Examples Section -->
+      <section class="test-examples">
+        <h2>🧪 ตัวอย่างการทดสอบ</h2>
+        
+        <div class="example-grid">
+          <div class="example-card">
+            <h4>The Soloist Patterns</h4>
+            <div class="example-numbers">
+              <button class="example-btn" onclick="testNumber('1111111111')">1111111111</button>
+              <button class="example-btn" onclick="testNumber('2222222222')">2222222222</button>
+              <button class="example-btn" onclick="testNumber('9999999999')">9999999999</button>
+            </div>
+            <p class="example-desc">ตัวเลขซ้ำทั้งหมด (All digits identical)</p>
+          </div>
+
+          <div class="example-card">
+            <h4>Full Straight Patterns</h4>
+            <div class="example-numbers">
+              <button class="example-btn" onclick="testNumber('1234567890')">1234567890</button>
+              <button class="example-btn" onclick="testNumber('9876543210')">9876543210</button>
+              <button class="example-btn" onclick="testNumber('0123456789')">0123456789</button>
+            </div>
+            <p class="example-desc">ลำดับเรียงต่อเนื่อง (Sequential order)</p>
+          </div>
+
+          <div class="example-card">
+            <h4>Thai Mobile Patterns</h4>
+            <div class="example-numbers">
+              <button class="example-btn" onclick="testNumber('0612345678')">0612345678</button>
+              <button class="example-btn" onclick="testNumber('0887654321')">0887654321</button>
+              <button class="example-btn" onclick="testNumber('0911223344')">0911223344</button>
+            </div>
+            <p class="example-desc">หมายเลขมือถือไทย (Thai mobile numbers)</p>
+          </div>
+
+          <div class="example-card">
+            <h4>Rhythmic Bridge Patterns</h4>
+            <div class="example-numbers">
+              <button class="example-btn" onclick="testNumber('1231231234')">1231231234</button>
+              <button class="example-btn" onclick="testNumber('4564564567')">4564564567</button>
+              <button class="example-btn" onclick="testNumber('7897897890')">7897897890</button>
+            </div>
+            <p class="example-desc">รูปแบบซ้ำในบล็อก (Repeating blocks)</p>
+          </div>
+
+          <div class="example-card">
+            <h4>Hyphen-separated Patterns</h4>
+            <div class="example-numbers">
+              <button class="example-btn" onclick="testNumber('1112223333')">1112223333</button>
+              <button class="example-btn" onclick="testNumber('4445556666')">4445556666</button>
+              <button class="example-btn" onclick="testNumber('7778889999')">7778889999</button>
+            </div>
+            <p class="example-desc">แยกเป็นบล็อกที่แตกต่าง (Distinct blocks)</p>
+          </div>
+
+          <div class="example-card">
+            <h4>Non-matching Examples</h4>
+            <div class="example-numbers">
+              <button class="example-btn" onclick="testNumber('1357924680')">1357924680</button>
+              <button class="example-btn" onclick="testNumber('2468135790')">2468135790</button>
+              <button class="example-btn" onclick="testNumber('5432167890')">5432167890</button>
+            </div>
+            <p class="example-desc">ไม่ตรงกับ pattern ใดๆ (No pattern match)</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pattern Information -->
+      <section class="pattern-info">
+        <h2>📋 Pattern ที่รองรับ</h2>
+        
+        <div class="pattern-list">
+          <div class="pattern-category">
+            <h4>🎯 The Soloist (7 patterns)</h4>
+            <ul>
+              <li>All 10 digits identical (aaaaaaaaaa)</li>
+              <li>All 9 digits identical (?bbbbbbbbb)</li>
+              <li>All 8 digits identical (??dddddddd)</li>
+              <li>All 7 digits identical (???ddddddd)</li>
+              <li>All 6 digits identical (????eeeeee)</li>
+              <li>All 5 digits identical (?????fffff)</li>
+              <li>All 4 digits identical (??????gggg)</li>
+            </ul>
+          </div>
+
+          <div class="pattern-category">
+            <h4>🔗 Hyphen-separated (5 patterns)</h4>
+            <ul>
+              <li>2 distinct digits across blocks (bbbaaaaaaa)</li>
+              <li>2 distinct digits across blocks (bbbbbaaaaa)</li>
+              <li>2 distinct digits across blocks (bbbaaabbbb)</li>
+              <li>3 distinct digits across blocks (aaabbbcccc)</li>
+              <li>First and last blocks identical (bbb???bbbb)</li>
+            </ul>
+          </div>
+
+          <div class="pattern-category">
+            <h4>📈 The Full Straight (2 patterns)</h4>
+            <ul>
+              <li>Ascending sequence (abcdefghij)</li>
+              <li>Descending sequence (jihgfedcba)</li>
+            </ul>
+          </div>
+
+          <div class="pattern-category">
+            <h4>🔄 Cyclic Straight (2 patterns)</h4>
+            <ul>
+              <li>Cyclic ascending (zabcdefghi)</li>
+              <li>Cyclic descending (ihgfedcbaz)</li>
+            </ul>
+          </div>
+
+          <div class="pattern-category">
+            <h4>🌉 The Rhythmic Bridge (4 patterns)</h4>
+            <ul>
+              <li>Repeating pattern 2-3 block (abc???abc?)</li>
+              <li>Repeating pattern front-middle (abcabc????)</li>
+              <li>Repeating pattern middle-end (???abcabc?)</li>
+              <li>Fully linked on 3 blocks (abcabcabc?)</li>
+            </ul>
+          </div>
+
+          <div class="pattern-category">
+            <h4>📱 Thai Mobile No. (3 patterns)</h4>
+            <ul>
+              <li>Started with 06 (06????????)</li>
+              <li>Started with 08 (08????????)</li>
+              <li>Started with 09 (09????????)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="total-patterns">
+          <strong>รวมทั้งหมด: 23 patterns</strong>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Loading Screen -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div class="loading-title">กำลังประมวลผล<span class="loading-dots"></span></div>
+      <div id="loading-message" class="loading-message">กำลังสร้างหมายเลขบัญชี</div>
+    </div>
+  </div>
+
+  <script src="performance-monitor.js"></script>
+  <script src="lucky-number-system.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // Initialize the application when DOM is loaded
+    document.addEventListener('DOMContentLoaded', init);
+    
+    // Function to test a specific number
+    function testNumber(number) {
+      const numberInput = document.getElementById('number-input');
+      const checkBtn = document.getElementById('check-number-btn');
+      
+      if (numberInput && checkBtn) {
+        numberInput.value = number;
+        checkBtn.click();
+      }
+    }
+    
+    // Add logging for universal number checker
+    setTimeout(() => {
+      console.log('=== Universal Number Checker ===');
+      console.log('System will check against all 23 supported patterns automatically');
+      console.log('No need to add patterns first - just enter a 10-digit number');
+      console.log('=== Ready for testing ===');
+    }, 500);
+  </script>
+
+  <style>
+    .test-examples {
+      background: #f8f9fa;
+      padding: 2rem;
+      border-radius: 12px;
+      margin: 2rem 0;
+    }
+    
+    .example-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    
+    .example-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
+    
+    .example-card h4 {
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+    
+    .example-numbers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+    
+    .example-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .example-btn:hover {
+      background: var(--primary-dark);
+    }
+    
+    .example-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+    
+    .pattern-info {
+      background: #e9ecef;
+      padding: 2rem;
+      border-radius: 12px;
+      margin: 2rem 0;
+    }
+    
+    .pattern-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    
+    .pattern-category {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
+    
+    .pattern-category h4 {
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+    
+    .pattern-category ul {
+      margin: 0;
+      padding-left: 1.5rem;
+    }
+    
+    .pattern-category li {
+      margin: 0.5rem 0;
+      font-size: 0.9rem;
+    }
+    
+    .total-patterns {
+      text-align: center;
+      font-size: 1.2rem;
+      color: var(--primary-color);
+      margin-top: 2rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      border: 2px solid var(--primary-color);
+    }
+    
+    @media (max-width: 768px) {
+      .example-grid,
+      .pattern-list {
+        grid-template-columns: 1fr;
+      }
+      
+      .example-numbers {
+        justify-content: center;
+      }
+    }
+  </style>
+</body>
+</html>

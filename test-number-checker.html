@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Number Checker</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>Test Number Checker</h1>
+        <p class="subtitle">ทดสอบ feature ตรวจสอบหมายเลข 10 หลัก</p>
+      </div>
+    </header>
+
+    <main>
+      <!-- Number Checker Section -->
+      <section class="number-checker-section">
+        <h2>🔍 ตรวจสอบหมายเลข</h2>
+        <div class="checker-group">
+          <label for="number-input">กรอกหมายเลข 10 หลัก:</label>
+          <div class="checker-input-row">
+            <input type="text" id="number-input" class="form-control" placeholder="กรอกหมายเลข 10 หลัก เช่น 1234567890" maxlength="10">
+            <button id="check-number-btn" class="btn btn-secondary">🔍 ตรวจสอบ</button>
+          </div>
+          <small class="input-help">กรอกหมายเลขบัญชี 10 หลักเพื่อตรวจสอบว่าอยู่ใน pattern ที่มีอยู่หรือไม่</small>
+        </div>
+        <div id="checker-result" class="checker-result" style="display: none;"></div>
+      </section>
+
+      <!-- Pattern Selection Area -->
+      <section class="input-section">
+        <h2>เลือก Pattern</h2>
+        <div class="input-group">
+          <label for="pattern-select">เลือก Pattern Type:</label>
+          <select id="pattern-select" aria-describedby="pattern-help">
+            <option value="">-- เลือก Pattern --</option>
+            <option value="AAA">AAA (Soloist - 720 numbers)</option>
+            <option value="ABCD">ABCD (Full Straight - 5,040 numbers)</option>
+            <option value="ABC-DEF">ABC-DEF (Hyphen Separated)</option>
+            <option value="ABCABC">ABCABC (Rhythmic Bridge)</option>
+          </select>
+          <small id="pattern-help">เลือก pattern เพื่อสร้างข้อมูลสำหรับทดสอบ number checker</small>
+          <button id="add-pattern-btn" class="btn btn-primary">เพิ่ม Pattern</button>
+        </div>
+        <div id="error-message" class="error-message" role="alert" aria-live="assertive"></div>
+      </section>
+
+      <!-- Pattern List Section -->
+      <section class="pattern-list-section">
+        <h2>Patterns ที่เพิ่มแล้ว</h2>
+        <div id="pattern-list" class="pattern-list"></div>
+      </section>
+
+      <!-- Results Area -->
+      <section class="results-section">
+        <div class="results-header">
+          <h2>ผลลัพธ์</h2>
+          <div class="export-buttons">
+            <button id="export-csv-btn" class="btn-export btn-export-csv" style="display: none;">
+              📄 Export CSV
+            </button>
+            <button id="export-excel-btn" class="btn-export btn-export-excel" style="display: none;">
+              📊 Export Excel
+            </button>
+          </div>
+        </div>
+        <div id="results-display" class="results-display"></div>
+      </section>
+
+      <!-- Test Instructions -->
+      <section class="test-instructions">
+        <h3>🧪 Test Instructions</h3>
+        
+        <div class="test-steps">
+          <h4>Step 1: Add Pattern Data</h4>
+          <ol>
+            <li>Select "AAA" pattern from dropdown</li>
+            <li>Click "เพิ่ม Pattern" button</li>
+            <li>Wait for pattern generation to complete</li>
+            <li>You should see 720 numbers generated</li>
+          </ol>
+        </div>
+
+        <div class="test-steps">
+          <h4>Step 2: Test Number Checker</h4>
+          <ol>
+            <li><strong>Test Valid Numbers:</strong>
+              <ul>
+                <li>Try: <code>1111111111</code> (should be found in AAA pattern)</li>
+                <li>Try: <code>2222222222</code> (should be found in AAA pattern)</li>
+                <li>Try: <code>9999999999</code> (should be found in AAA pattern)</li>
+              </ul>
+            </li>
+            <li><strong>Test Invalid Numbers:</strong>
+              <ul>
+                <li>Try: <code>1234567890</code> (should NOT be found in AAA pattern)</li>
+                <li>Try: <code>1122334455</code> (should NOT be found in AAA pattern)</li>
+              </ul>
+            </li>
+            <li><strong>Test Input Validation:</strong>
+              <ul>
+                <li>Try: <code>123</code> (should show "หมายเลขต้องมี 10 หลักเท่านั้น")</li>
+                <li>Try: <code>12345678901</code> (should be truncated to 10 digits)</li>
+                <li>Try: <code>123abc7890</code> (should remove non-digits)</li>
+                <li>Try: empty input (should show "กรุณากรอกหมายเลข")</li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+
+        <div class="test-steps">
+          <h4>Step 3: Test Multiple Patterns</h4>
+          <ol>
+            <li>Add "ABCD" pattern as well</li>
+            <li>Try: <code>1234567890</code> (should be found in ABCD pattern)</li>
+            <li>Try: <code>9876543210</code> (should be found in ABCD pattern)</li>
+            <li>Try: <code>1111111111</code> (should be found in AAA pattern only)</li>
+          </ol>
+        </div>
+
+        <div class="expected-results">
+          <h4>✅ Expected Results:</h4>
+          <ul>
+            <li><strong>Found Numbers:</strong> Green background with ✅ icon and pattern details</li>
+            <li><strong>Not Found Numbers:</strong> Red background with ❌ icon</li>
+            <li><strong>Input Errors:</strong> Yellow background with validation message</li>
+            <li><strong>Multiple Matches:</strong> Shows all patterns where number is found</li>
+            <li><strong>Auto-hide Errors:</strong> Error messages disappear after 5 seconds</li>
+          </ul>
+        </div>
+
+        <div class="feature-benefits">
+          <h4>🎯 Feature Benefits:</h4>
+          <ul>
+            <li><strong>Quick Verification:</strong> Instantly check if a number exists in generated patterns</li>
+            <li><strong>Pattern Identification:</strong> Shows which pattern(s) contain the number</li>
+            <li><strong>Input Validation:</strong> Ensures only valid 10-digit numbers are checked</li>
+            <li><strong>Multiple Pattern Support:</strong> Searches across all added patterns</li>
+            <li><strong>User-Friendly:</strong> Clear success/error messages with visual feedback</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Loading Screen -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div class="loading-title">กำลังประมวลผล<span class="loading-dots"></span></div>
+      <div id="loading-message" class="loading-message">กำลังสร้างหมายเลขบัญชี</div>
+    </div>
+  </div>
+
+  <script src="performance-monitor.js"></script>
+  <script src="lucky-number-system.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // Initialize the application when DOM is loaded
+    document.addEventListener('DOMContentLoaded', init);
+    
+    // Add logging for number checker testing
+    setTimeout(() => {
+      console.log('=== Number Checker Test ===');
+      console.log('Number checker elements:');
+      console.log('- Input field:', document.getElementById('number-input') ? 'Found' : 'Not found');
+      console.log('- Check button:', document.getElementById('check-number-btn') ? 'Found' : 'Not found');
+      console.log('- Result div:', document.getElementById('checker-result') ? 'Found' : 'Not found');
+      console.log('=== Ready for testing ===');
+    }, 500);
+  </script>
+
+  <style>
+    .test-instructions {
+      background: #f8f9fa;
+      padding: 2rem;
+      border-radius: 12px;
+      margin: 2rem 0;
+    }
+    
+    .test-steps {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary-color);
+    }
+    
+    .test-steps h4 {
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+    
+    .test-steps code {
+      background: #e9ecef;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-weight: bold;
+    }
+    
+    .expected-results,
+    .feature-benefits {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+    }
+    
+    .expected-results h4 {
+      color: #28a745;
+      margin-bottom: 1rem;
+    }
+    
+    .feature-benefits h4 {
+      color: #007bff;
+      margin-bottom: 1rem;
+    }
+  </style>
+</body>
+</html>

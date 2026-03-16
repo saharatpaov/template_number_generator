@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Card with Simple Text</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>Card with Simple Text</h1>
+        <p class="subtitle">การ์ดแบบเดิม + ข้อความแบบใหม่ที่แก้ไขแล้ว</p>
+      </div>
+    </header>
+
+    <main>
+      <!-- Number Checker Section -->
+      <section class="number-checker-section">
+        <h2>🔍 ตรวจสอบหมายเลข</h2>
+        <div class="checker-group">
+          <label for="number-input">กรอกหมายเลข 10 หลัก:</label>
+          <div class="checker-input-row">
+            <input type="text" id="number-input" class="form-control" placeholder="กรอกหมายเลข 10 หลัก เช่น 1234567890" maxlength="10">
+            <button id="check-number-btn" class="btn btn-secondary">🔍 ตรวจสอบ</button>
+          </div>
+          <small class="input-help">การ์ดแบบเดิมที่สวยงาม + ข้อความแบบใหม่ที่เรียบง่าย</small>
+        </div>
+        <div id="checker-result" class="checker-result" style="display: none;"></div>
+      </section>
+
+      <!-- Demo Section -->
+      <section class="demo-section">
+        <h2>🎨 Demo การแสดงผล</h2>
+        
+        <div class="demo-grid">
+          <div class="demo-card">
+            <h4>✅ Multiple Patterns Found</h4>
+            <p>ทดสอบการแสดงผลหลาย pattern ในรูปแบบการ์ด</p>
+            <button class="demo-btn" onclick="testNumber('1231231234')">1231231234</button>
+            <div class="demo-preview">
+              <div class="preview-result found">
+                <div class="result-header">
+                  <div class="result-icon">✅</div>
+                  <div class="result-title">พบหมายเลข 1231231234 ตรงกับ 4 patterns</div>
+                </div>
+                <div class="result-patterns">
+                  <div class="pattern-match">
+                    <div class="pattern-number">1</div>
+                    <div class="pattern-details">
+                      <div class="pattern-line-card">The Rhythmic Bridge (abc???abc?) - Repeating pattern 2-3 block</div>
+                    </div>
+                  </div>
+                  <div class="pattern-match">
+                    <div class="pattern-number">2</div>
+                    <div class="pattern-details">
+                      <div class="pattern-line-card">The Rhythmic Bridge (abcabc????) - Repeating pattern front-middle</div>
+                    </div>
+                  </div>
+                  <div class="pattern-match">
+                    <div class="pattern-number">3</div>
+                    <div class="pattern-details">
+                      <div class="pattern-line-card">The Rhythmic Bridge (???abcabc?) - Repeating pattern middle-end</div>
+                    </div>
+                  </div>
+                  <div class="pattern-match">
+                    <div class="pattern-number">4</div>
+                    <div class="pattern-details">
+                      <div class="pattern-line-card">The Rhythmic Bridge (abcabcabc?) - Fully linked on 3 blocks</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="demo-card">
+            <h4>✅ Single Pattern Found</h4>
+            <p>ทดสอบการแสดงผล pattern เดียวในรูปแบบการ์ด</p>
+            <button class="demo-btn" onclick="testNumber('1111111111')">1111111111</button>
+            <div class="demo-preview">
+              <div class="preview-result found">
+                <div class="result-header">
+                  <div class="result-icon">✅</div>
+                  <div class="result-title">พบหมายเลข 1111111111 ตรงกับ 1 pattern</div>
+                </div>
+                <div class="result-patterns">
+                  <div class="pattern-match">
+                    <div class="pattern-number">1</div>
+                    <div class="pattern-details">
+                      <div class="pattern-line-card">The Soloist (aaaaaaaaaa) - All 10 digits identical</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="demo-card">
+            <h4>❌ No Pattern Found</h4>
+            <p>ทดสอบการแสดงผลเมื่อไม่พบ pattern</p>
+            <button class="demo-btn" onclick="testNumber('7821468823')">7821468823</button>
+            <div class="demo-preview">
+              <div class="preview-result not-found">
+                <div class="result-header">
+                  <div class="result-icon">❌</div>
+                  <div class="result-title">ไม่พบหมายเลข 7821468823 ในรูปแบบ pattern ใดๆ ที่รองรับ</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section class="features-section">
+        <h2>✨ คุณสมบัติ</h2>
+        
+        <div class="features-grid">
+          <div class="feature-item">
+            <div class="feature-icon">🎨</div>
+            <h4>การ์ดแบบเดิม</h4>
+            <p>ใช้การ์ดที่สวยงามแบบเดิม มีสีสันและ layout ที่ดูดี</p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">📝</div>
+            <h4>ข้อความแบบใหม่</h4>
+            <p>ข้อความในรูปแบบ: Pattern Type (pattern) - Description</p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">🔧</div>
+            <h4>แก้ไขปัญหา</h4>
+            <p>ไม่มี X ซ้ำ, ไม่มีขีดขั้นซ้ำ, แสดงผลชัดเจน</p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">📱</div>
+            <h4>Responsive</h4>
+            <p>ทำงานได้ดีทั้ง desktop และ mobile</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Loading Screen -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div class="loading-title">กำลังประมวลผล<span class="loading-dots"></span></div>
+      <div id="loading-message" class="loading-message">กำลังสร้างหมายเลขบัญชี</div>
+    </div>
+  </div>
+
+  <script src="performance-monitor.js"></script>
+  <script src="lucky-number-system.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // Initialize the application when DOM is loaded
+    document.addEventListener('DOMContentLoaded', init);
+    
+    // Function to test a specific number
+    function testNumber(number) {
+      const numberInput = document.getElementById('number-input');
+      const checkBtn = document.getElementById('check-number-btn');
+      
+      if (numberInput && checkBtn) {
+        numberInput.value = number;
+        checkBtn.click();
+        
+        // Scroll to result
+        setTimeout(() => {
+          const resultDiv = document.getElementById('checker-result');
+          if (resultDiv && resultDiv.style.display !== 'none') {
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      }
+    }
+    
+    // Add logging
+    setTimeout(() => {
+      console.log('=== Card with Simple Text ===');
+      console.log('✅ Beautiful cards (restored)');
+      console.log('✅ Simple text format: Type (pattern) - Description');
+      console.log('✅ Fixed duplicate X and underlines');
+      console.log('=== Ready for testing ===');
+    }, 500);
+  </script>
+
+  <style>
+    .demo-section {
+      background: #f8f9fa;
+      padding: 2rem;
+      border-radius: 12px;
+      margin: 2rem 0;
+    }
+    
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+      margin: 1.5rem 0;
+    }
+    
+    .demo-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
+    
+    .demo-card h4 {
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+    }
+    
+    .demo-card p {
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+    
+    .demo-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    
+    .demo-btn:hover {
+      background: var(--primary-dark);
+    }
+    
+    .demo-preview {
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .preview-result {
+      padding: 1rem;
+      font-size: 0.85rem;
+    }
+    
+    .preview-result.found {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+    }
+    
+    .preview-result.not-found {
+      background: #f8d7da;
+      border-left: 4px solid #dc3545;
+    }
+    
+    .preview-result .result-header {
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .preview-result .result-icon {
+      font-size: 1.2rem;
+    }
+    
+    .preview-result .result-title {
+      font-size: 0.85rem;
+    }
+    
+    .preview-result .pattern-match {
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      gap: 0.5rem;
+    }
+    
+    .preview-result .pattern-number {
+      width: 1.5rem;
+      height: 1.5rem;
+      font-size: 0.75rem;
+    }
+    
+    .preview-result .pattern-line-card {
+      font-size: 0.8rem;
+    }
+    
+    .features-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      margin: 2rem 0;
+    }
+    
+    .features-section h2 {
+      color: white;
+      margin-bottom: 1.5rem;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    
+    .feature-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+    
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .feature-item h4 {
+      color: white;
+      margin-bottom: 1rem;
+    }
+    
+    .feature-item p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    
+    @media (max-width: 768px) {
+      .demo-grid,
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</body>
+</html>

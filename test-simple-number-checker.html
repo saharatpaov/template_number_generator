@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Number Checker</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>Simple Number Checker</h1>
+        <p class="subtitle">ตรวจสอบหมายเลขกับทุก pattern - แสดงผลแบบง่าย</p>
+      </div>
+    </header>
+
+    <main>
+      <!-- Number Checker Section -->
+      <section class="number-checker-section">
+        <h2>🔍 ตรวจสอบหมายเลข</h2>
+        <div class="checker-group">
+          <label for="number-input">กรอกหมายเลข 10 หลัก:</label>
+          <div class="checker-input-row">
+            <input type="text" id="number-input" class="form-control" placeholder="กรอกหมายเลข 10 หลัก เช่น 1234567890" maxlength="10">
+            <button id="check-number-btn" class="btn btn-secondary">🔍 ตรวจสอบ</button>
+          </div>
+          <small class="input-help">ระบบจะตรวจสอบกับทุก pattern ที่รองรับโดยอัตโนมัติ และแสดงผลแบบง่าย</small>
+        </div>
+        <div id="checker-result" class="checker-result" style="display: none;"></div>
+      </section>
+
+      <!-- Quick Test Section -->
+      <section class="quick-test-simple">
+        <h2>⚡ ทดสอบด่วน</h2>
+        <p>คลิกหมายเลขด้านล่างเพื่อทดสอบการแสดงผลแบบง่าย</p>
+        
+        <div class="test-examples">
+          <div class="test-category">
+            <h4>🎯 Multiple Matches</h4>
+            <div class="test-buttons">
+              <button class="simple-test-btn" onclick="testNumber('1231231234')">1231231234</button>
+              <button class="simple-test-btn" onclick="testNumber('1234567890')">1234567890</button>
+              <button class="simple-test-btn" onclick="testNumber('0123456789')">0123456789</button>
+            </div>
+          </div>
+
+          <div class="test-category">
+            <h4>🎯 Single Match</h4>
+            <div class="test-buttons">
+              <button class="simple-test-btn" onclick="testNumber('1111111111')">1111111111</button>
+              <button class="simple-test-btn" onclick="testNumber('0612345678')">0612345678</button>
+              <button class="simple-test-btn" onclick="testNumber('1112223333')">1112223333</button>
+            </div>
+          </div>
+
+          <div class="test-category">
+            <h4>❌ No Match</h4>
+            <div class="test-buttons">
+              <button class="simple-test-btn" onclick="testNumber('1357924680')">1357924680</button>
+              <button class="simple-test-btn" onclick="testNumber('2468135790')">2468135790</button>
+              <button class="simple-test-btn" onclick="testNumber('9517364820')">9517364820</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Expected Output Examples -->
+      <section class="output-examples">
+        <h2>📋 ตัวอย่างผลลัพธ์</h2>
+        
+        <div class="example-output">
+          <h4>✅ เมื่อพบ Multiple Patterns:</h4>
+          <div class="example-result found">
+            <div class="result-header-simple">
+              <span class="result-icon">✅</span>
+              <span class="result-title">พบหมายเลข 1231231234 ตรงกับ 4 patterns:</span>
+            </div>
+            <div class="result-list">
+              <div class="pattern-line">1. The Rhythmic Bridge (abc???abc?) - Repeating pattern 2-3 block</div>
+              <div class="pattern-line">2. The Rhythmic Bridge (abcabc????) - Repeating pattern front-middle</div>
+              <div class="pattern-line">3. The Rhythmic Bridge (???abcabc?) - Repeating pattern middle-end</div>
+              <div class="pattern-line">4. The Rhythmic Bridge (abcabcabc?) - Fully linked on 3 blocks</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="example-output">
+          <h4>✅ เมื่อพบ Single Pattern:</h4>
+          <div class="example-result found">
+            <div class="result-header-simple">
+              <span class="result-icon">✅</span>
+              <span class="result-title">พบหมายเลข 1111111111 ตรงกับ 1 pattern:</span>
+            </div>
+            <div class="result-list">
+              <div class="pattern-line">1. The Soloist (aaaaaaaaaa) - All 10 digits identical</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="example-output">
+          <h4>❌ เมื่อไม่พบ Pattern:</h4>
+          <div class="example-result not-found">
+            <div class="result-header-simple">
+              <span class="result-icon">❌</span>
+              <span class="result-title">ไม่พบหมายเลข 1357924680 ในรูปแบบ pattern ใดๆ ที่รองรับ</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Loading Screen -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div class="loading-title">กำลังประมวลผล<span class="loading-dots"></span></div>
+      <div id="loading-message" class="loading-message">กำลังสร้างหมายเลขบัญชี</div>
+    </div>
+  </div>
+
+  <script src="performance-monitor.js"></script>
+  <script src="lucky-number-system.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // Initialize the application when DOM is loaded
+    document.addEventListener('DOMContentLoaded', init);
+    
+    // Function to test a specific number
+    function testNumber(number) {
+      const numberInput = document.getElementById('number-input');
+      const checkBtn = document.getElementById('check-number-btn');
+      
+      if (numberInput && checkBtn) {
+        numberInput.value = number;
+        checkBtn.click();
+        
+        // Scroll to result
+        setTimeout(() => {
+          const resultDiv = document.getElementById('checker-result');
+          if (resultDiv && resultDiv.style.display !== 'none') {
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      }
+    }
+    
+    // Add logging
+    setTimeout(() => {
+      console.log('=== Simple Number Checker ===');
+      console.log('Clean, simple output format');
+      console.log('Format: Pattern Type (pattern) - Description');
+      console.log('=== Ready for testing ===');
+    }, 500);
+  </script>
+
+  <style>
+    .quick-test-simple {
+      background: #f8f9fa;
+      padding: 2rem;
+      border-radius: 12px;
+      margin: 2rem 0;
+    }
+    
+    .test-examples {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    
+    .test-category {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
+    
+    .test-category h4 {
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+    
+    .test-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .simple-test-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .simple-test-btn:hover {
+      background: var(--primary-dark);
+    }
+    
+    .output-examples {
+      background: #e9ecef;
+      padding: 2rem;
+      border-radius: 12px;
+      margin: 2rem 0;
+    }
+    
+    .example-output {
+      margin: 1.5rem 0;
+    }
+    
+    .example-output h4 {
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+    
+    .example-result {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
+    
+    .example-result.found {
+      border-left: 4px solid #28a745;
+    }
+    
+    .example-result.not-found {
+      border-left: 4px solid #dc3545;
+    }
+    
+    @media (max-width: 768px) {
+      .test-examples {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Number Generator - Test Favicon & Version</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ff6b6b;stop-opacity:1' /%3E%3Cstop offset='50%25' style='stop-color:%23ee5a24;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23ff9ff3;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23grad)' stroke='%23fff' stroke-width='2'/%3E%3Ctext x='50' y='35' font-family='Arial,sans-serif' font-size='16' font-weight='bold' text-anchor='middle' fill='white'%3E123%3C/text%3E%3Ctext x='50' y='55' font-family='Arial,sans-serif' font-size='12' font-weight='bold' text-anchor='middle' fill='white'%3EGEN%3C/text%3E%3Cpath d='M30 70 L50 60 L70 70' stroke='white' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>Account Number Generator</h1>
+        <p class="subtitle">ทดสอบ Favicon และ Version</p>
+      </div>
+    </header>
+
+    <main>
+      <!-- Number Checker Section -->
+      <section class="number-checker-section">
+        <h2>🔍 ตรวจสอบหมายเลข</h2>
+        <div class="checker-group">
+          <label for="number-input">กรอกหมายเลข 10 หลัก:</label>
+          <div class="checker-input-row">
+            <input type="text" id="number-input" class="form-control" placeholder="กรอกหมายเลข 10 หลัก เช่น 1234567890" maxlength="10">
+            <button id="check-number-btn" class="btn btn-secondary">🔍 ตรวจสอบ</button>
+          </div>
+          <small class="input-help">ระบบจะตรวจสอบกับทุก pattern ที่รองรับโดยอัตโนมัติ</small>
+        </div>
+        <div id="checker-result" class="checker-result" style="display: none;"></div>
+      </section>
+
+      <!-- Features Section -->
+      <section class="features-showcase">
+        <h2>✨ สิ่งที่เพิ่มใหม่</h2>
+        
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🎨</div>
+            <h4>Custom Favicon</h4>
+            <p>เพิ่ม favicon แบบ SVG ที่สวยงาม มีสีไล่เฉดและข้อความ "123 GEN"</p>
+            <div class="favicon-preview">
+              <svg width="48" height="48" viewBox="0 0 100 100">
+                <defs>
+                  <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#ee5a24;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#ff9ff3;stop-opacity:1" />
+                  </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="45" fill="url(#grad)" stroke="#fff" stroke-width="2"/>
+                <text x="50" y="35" font-family="Arial,sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">123</text>
+                <text x="50" y="55" font-family="Arial,sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">GEN</text>
+                <path d="M30 70 L50 60 L70 70" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🏷️</div>
+            <h4>Version Display</h4>
+            <p>เพิ่มการแสดง Version 1.0 ใน footer กึ่งกลางหน้าจอ</p>
+            <div class="version-preview">
+              <div class="preview-footer">
+                <p>&copy; 2026 Saharat Paovarangkul</p>
+                <p class="version">Version 1.0</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h4>Browser Tab</h4>
+            <p>Favicon จะแสดงในแท็บของเบราว์เซอร์ ทำให้จดจำได้ง่าย</p>
+            <div class="tab-preview">
+              <div class="browser-tab">
+                <svg width="16" height="16" viewBox="0 0 100 100">
+                  <defs>
+                    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:1" />
+                      <stop offset="50%" style="stop-color:#ee5a24;stop-opacity:1" />
+                      <stop offset="100%" style="stop-color:#ff9ff3;stop-opacity:1" />
+                    </linearGradient>
+                  </defs>
+                  <circle cx="50" cy="50" r="45" fill="url(#grad2)" stroke="#fff" stroke-width="2"/>
+                  <text x="50" y="35" font-family="Arial,sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="white">123</text>
+                  <text x="50" y="55" font-family="Arial,sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="white">GEN</text>
+                  <path d="M30 70 L50 60 L70 70" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+                </svg>
+                <span>Account Number Generator</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Test Section -->
+      <section class="test-section">
+        <h2>🧪 ทดสอบ</h2>
+        <div class="test-instructions">
+          <h4>วิธีทดสอบ:</h4>
+          <ol>
+            <li><strong>ดู Favicon:</strong> ตรวจสอบแท็บเบราว์เซอร์ จะเห็น icon สีไล่เฉด</li>
+            <li><strong>ดู Version:</strong> เลื่อนลงไปดู footer ด้านล่าง</li>
+            <li><strong>ทดสอบ Number Checker:</strong> กรอกหมายเลขเพื่อทดสอบระบบ</li>
+          </ol>
+        </div>
+        
+        <div class="quick-tests">
+          <button class="test-btn" onclick="testNumber('1111111111')">ทดสอบ: 1111111111</button>
+          <button class="test-btn" onclick="testNumber('7821468823')">ทดสอบ: 7821468823</button>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 Saharat Paovarangkul</p>
+      <p class="version">Version 1.0</p>
+    </footer>
+  </div>
+
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div class="loading-title">กำลังประมวลผล<span class="loading-dots"></span></div>
+      <div id="loading-message" class="loading-message">กำลังสร้างหมายเลขบัญชี</div>
+    </div>
+  </div>
+
+  <script src="performance-monitor.js"></script>
+  <script src="lucky-number-system.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', init);
+    
+    function testNumber(number) {
+      const numberInput = document.getElementById('number-input');
+      const checkBtn = document.getElementById('check-number-btn');
+      
+      if (numberInput && checkBtn) {
+        numberInput.value = number;
+        checkBtn.click();
+      }
+    }
+  </script>

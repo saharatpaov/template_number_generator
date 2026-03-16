@@ -2350,6 +2350,10 @@ class UIController {
       resultsDisplay: document.getElementById('results-display'),
       exportCsvBtn: document.getElementById('export-csv-btn'),
       exportExcelBtn: document.getElementById('export-excel-btn'),
+      // Number checker elements
+      numberInput: document.getElementById('number-input'),
+      checkNumberBtn: document.getElementById('check-number-btn'),
+      checkerResult: document.getElementById('checker-result'),
     };
 
     // Cache loading elements
@@ -2468,6 +2472,27 @@ class UIController {
       this.clearError();
     });
 
+    // Number checker event listeners
+    if (this.elements.checkNumberBtn) {
+      this.elements.checkNumberBtn.addEventListener('click', () => {
+        this.handleNumberCheck();
+      });
+    }
+
+    if (this.elements.numberInput) {
+      // Allow only digits and limit to 10 characters
+      this.elements.numberInput.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
+      });
+
+      // Check number on Enter key
+      this.elements.numberInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          this.handleNumberCheck();
+        }
+      });
+    }
+
     // Wire event handlers for export buttons
     if (this.elements.exportCsvBtn) {
       this.elements.exportCsvBtn.addEventListener('click', async () => {
@@ -2515,6 +2540,8 @@ class UIController {
     console.log('- Input submission (button + Enter key)');
     console.log('- Pattern removal (via removePattern method)');
     console.log('- CSV export');
+    console.log('- Excel export');
+    console.log('- Number checker');
     console.log('- Error display clearing');
     console.log('- Performance monitoring controls');
   }
@@ -3681,6 +3708,443 @@ class UIController {
       }
 
       document.body.removeChild(textArea);
+    }
+  }
+
+  handleNumberCheck() {
+    console.log('handleNumberCheck called');
+    
+    // Check if elements exist
+    if (!this.elements.numberInput) {
+      console.error('Number input element not found');
+      return;
+    }
+    
+    if (!this.elements.checkerResult) {
+      console.error('Checker result element not found');
+      return;
+    }
+    
+    const numberInput = this.elements.numberInput.value.trim();
+    const resultDiv = this.elements.checkerResult;
+    
+    console.log('Input value:', numberInput);
+    
+    // Clear previous result
+    resultDiv.style.display = 'none';
+    resultDiv.className = 'checker-result';
+    
+    // Validate input
+    if (!numberInput) {
+      this.showCheckerResult('กรุณากรอกหมายเลข', 'error');
+      return;
+    }
+    
+    if (numberInput.length !== 10) {
+      this.showCheckerResult('หมายเลขต้องมี 10 หลักเท่านั้น', 'error');
+      return;
+    }
+    
+    if (!/^\d{10}$/.test(numberInput)) {
+      this.showCheckerResult('หมายเลขต้องเป็นตัวเลขเท่านั้น', 'error');
+      return;
+    }
+    
+    console.log('Checking number against all possible patterns:', numberInput);
+    
+    // Show loading while checking
+    this.showCheckerResult('🔍 กำลังตรวจสอบกับทุก pattern...', 'checking');
+    
+    // Check against all possible patterns (not just added ones)
+    this.checkAgainstAllPatterns(numberInput);
+  }
+  
+  async checkAgainstAllPatterns(numberInput) {
+    const foundInPatterns = [];
+    
+    // Define all possible patterns to check
+    const allPatterns = [
+      // The Soloist patterns
+      { pattern: 'aaaaaaaaaa', type: 'The Soloist', description: 'All 10 digits identical' },
+      { pattern: '?bbbbbbbbb', type: 'The Soloist', description: 'All 9 digits identical' },
+      { pattern: '??dddddddd', type: 'The Soloist', description: 'All 8 digits identical' },
+      { pattern: '???ddddddd', type: 'The Soloist', description: 'All 7 digits identical' },
+      { pattern: '????eeeeee', type: 'The Soloist', description: 'All 6 digits identical' },
+      { pattern: '?????fffff', type: 'The Soloist', description: 'All 5 digits identical' },
+      { pattern: '??????gggg', type: 'The Soloist', description: 'All 4 digits identical' },
+      
+      // Hyphen-separated patterns
+      { pattern: 'bbbaaaaaaa', type: 'Hyphen-separated', description: '2 distinct digits across blocks' },
+      { pattern: 'bbbbbaaaaa', type: 'Hyphen-separated', description: '2 distinct digits across blocks' },
+      { pattern: 'bbbaaabbbb', type: 'Hyphen-separated', description: '2 distinct digits across blocks' },
+      { pattern: 'aaabbbcccc', type: 'Hyphen-separated', description: '3 distinct digits across blocks' },
+      { pattern: 'bbb???bbbb', type: 'Hyphen-separated', description: 'First and last blocks identical' },
+      
+      // Full Straight patterns
+      { pattern: 'abcdefghij', type: 'The Full Straight', description: 'Ascending sequence' },
+      { pattern: 'jihgfedcba', type: 'The Full Straight', description: 'Descending sequence' },
+      
+      // Cyclic Straight patterns
+      { pattern: 'zabcdefghi', type: 'Cyclic Straight', description: 'Cyclic ascending' },
+      { pattern: 'ihgfedcbaz', type: 'Cyclic Straight', description: 'Cyclic descending' },
+      
+      // Rhythmic Bridge patterns
+      { pattern: 'abc???abc?', type: 'The Rhythmic Bridge', description: 'Repeating pattern 2-3 block' },
+      { pattern: 'abcabc????', type: 'The Rhythmic Bridge', description: 'Repeating pattern front-middle' },
+      { pattern: '???abcabc?', type: 'The Rhythmic Bridge', description: 'Repeating pattern middle-end' },
+      { pattern: 'abcabcabc?', type: 'The Rhythmic Bridge', description: 'Fully linked on 3 blocks' },
+      
+      // Thai Mobile patterns
+      { pattern: '06????????', type: 'Thai Mobile No.', description: 'Started with 06' },
+      { pattern: '08????????', type: 'Thai Mobile No.', description: 'Started with 08' },
+      { pattern: '09????????', type: 'Thai Mobile No.', description: 'Started with 09' }
+    ];
+    
+    console.log(`Checking against ${allPatterns.length} possible patterns...`);
+    
+    // Use PatternAnalyzer to check each pattern type
+    const analyzer = new PatternAnalyzer();
+    
+    for (const patternDef of allPatterns) {
+      try {
+        // Check if the number matches this pattern type
+        const matches = this.checkNumberAgainstPattern(numberInput, patternDef, analyzer);
+        if (matches) {
+          foundInPatterns.push({
+            pattern: patternDef.pattern,
+            patternType: patternDef.type,
+            description: patternDef.description,
+            matchDetails: matches
+          });
+          console.log(`Found match in pattern: ${patternDef.pattern} (${patternDef.type})`);
+        }
+      } catch (error) {
+        console.error(`Error checking pattern ${patternDef.pattern}:`, error);
+      }
+    }
+    
+    // Show results
+    if (foundInPatterns.length > 0) {
+      this.showCheckerResultFormatted(numberInput, foundInPatterns, 'found');
+      console.log('Number found in patterns:', foundInPatterns);
+    } else {
+      this.showCheckerResult(`❌ ไม่พบหมายเลข ${numberInput} ในรูปแบบ pattern ใดๆ ที่รองรับ`, 'not-found');
+      console.log('Number not found in any supported pattern');
+    }
+  }
+  
+  showCheckerResultFormatted(numberInput, foundInPatterns, type) {
+    console.log('showCheckerResultFormatted called:', numberInput, foundInPatterns.length, type);
+    
+    if (!this.elements.checkerResult) {
+      console.error('Checker result element not found');
+      return;
+    }
+    
+    const resultDiv = this.elements.checkerResult;
+    resultDiv.className = `checker-result ${type}`;
+    resultDiv.style.display = 'block';
+    
+    // Create formatted HTML content with cards but simple text format
+    let htmlContent = `
+      <div class="result-header">
+        <div class="result-icon">✅</div>
+        <div class="result-title">พบหมายเลข ${numberInput} ตรงกับ ${foundInPatterns.length} pattern${foundInPatterns.length > 1 ? 's' : ''}</div>
+      </div>
+      <div class="result-patterns">
+    `;
+    
+    foundInPatterns.forEach((found, index) => {
+      htmlContent += `
+        <div class="pattern-match">
+          <div class="pattern-number">${index + 1}</div>
+          <div class="pattern-details">
+            <div class="pattern-line-card">${found.patternType} (${found.pattern}) - ${found.description}</div>
+          </div>
+        </div>
+      `;
+    });
+    
+    htmlContent += `
+      </div>
+    `;
+    
+    resultDiv.innerHTML = htmlContent;
+    console.log('Card formatted result displayed');
+  }
+  
+  checkNumberAgainstPattern(numberInput, patternDef, analyzer) {
+    const pattern = patternDef.pattern;
+    const type = patternDef.type;
+    
+    try {
+      // Check based on pattern type
+      switch (type) {
+        case 'The Soloist':
+          return this.checkSoloistPattern(numberInput, pattern);
+          
+        case 'Hyphen-separated':
+          return this.checkHyphenPattern(numberInput, pattern);
+          
+        case 'The Full Straight':
+          return this.checkFullStraightPattern(numberInput, pattern);
+          
+        case 'Cyclic Straight':
+          return this.checkCyclicStraightPattern(numberInput, pattern);
+          
+        case 'The Rhythmic Bridge':
+          return this.checkRhythmicBridgePattern(numberInput, pattern);
+          
+        case 'Thai Mobile No.':
+          return this.checkThaiMobilePattern(numberInput, pattern);
+          
+        default:
+          return false;
+      }
+    } catch (error) {
+      console.error(`Error in checkNumberAgainstPattern for ${pattern}:`, error);
+      return false;
+    }
+  }
+  
+  checkSoloistPattern(numberInput, pattern) {
+    // Check if number matches soloist pattern (repeated digits)
+    const digits = numberInput.split('');
+    
+    if (pattern === 'aaaaaaaaaa') {
+      // All 10 digits identical
+      return digits.every(d => d === digits[0]);
+    }
+    
+    if (pattern === '?bbbbbbbbb') {
+      // Last 9 digits identical
+      const lastNine = digits.slice(1);
+      return lastNine.every(d => d === lastNine[0]);
+    }
+    
+    if (pattern === '??dddddddd') {
+      // Last 8 digits identical
+      const lastEight = digits.slice(2);
+      return lastEight.every(d => d === lastEight[0]);
+    }
+    
+    if (pattern === '???ddddddd') {
+      // Last 7 digits identical
+      const lastSeven = digits.slice(3);
+      return lastSeven.every(d => d === lastSeven[0]);
+    }
+    
+    if (pattern === '????eeeeee') {
+      // Last 6 digits identical
+      const lastSix = digits.slice(4);
+      return lastSix.every(d => d === lastSix[0]);
+    }
+    
+    if (pattern === '?????fffff') {
+      // Last 5 digits identical
+      const lastFive = digits.slice(5);
+      return lastFive.every(d => d === lastFive[0]);
+    }
+    
+    if (pattern === '??????gggg') {
+      // Last 4 digits identical
+      const lastFour = digits.slice(6);
+      return lastFour.every(d => d === lastFour[0]);
+    }
+    
+    return false;
+  }
+  
+  checkHyphenPattern(numberInput, pattern) {
+    // Check hyphen-separated patterns
+    const block1 = numberInput.slice(0, 3);
+    const block2 = numberInput.slice(3, 6);
+    const block3 = numberInput.slice(6, 10);
+    
+    if (pattern === 'bbbaaaaaaa') {
+      // First block different from rest
+      return block2.split('').every(d => d === block2[0]) && 
+             block3.split('').every(d => d === block3[0]) &&
+             block2[0] === block3[0] && block1[0] !== block2[0];
+    }
+    
+    if (pattern === 'bbbbbaaaaa') {
+      // First 5 digits one value, last 5 another
+      const first5 = numberInput.slice(0, 5);
+      const last5 = numberInput.slice(5);
+      return first5.split('').every(d => d === first5[0]) &&
+             last5.split('').every(d => d === last5[0]) &&
+             first5[0] !== last5[0];
+    }
+    
+    if (pattern === 'bbbaaabbbb') {
+      // First and last blocks same, middle different
+      return block1.split('').every(d => d === block1[0]) &&
+             block2.split('').every(d => d === block2[0]) &&
+             block3.split('').every(d => d === block3[0]) &&
+             block1[0] === block3[0] && block1[0] !== block2[0];
+    }
+    
+    if (pattern === 'aaabbbcccc') {
+      // All three blocks different
+      return block1.split('').every(d => d === block1[0]) &&
+             block2.split('').every(d => d === block2[0]) &&
+             block3.split('').every(d => d === block3[0]) &&
+             block1[0] !== block2[0] && block2[0] !== block3[0] && block1[0] !== block3[0];
+    }
+    
+    if (pattern === 'bbb???bbbb') {
+      // First and last blocks identical
+      return block1.split('').every(d => d === block1[0]) &&
+             block3.split('').every(d => d === block3[0]) &&
+             block1[0] === block3[0];
+    }
+    
+    return false;
+  }
+  
+  checkFullStraightPattern(numberInput, pattern) {
+    const digits = numberInput.split('').map(d => parseInt(d));
+    
+    if (pattern === 'abcdefghij') {
+      // Ascending sequence
+      for (let i = 1; i < digits.length; i++) {
+        if (digits[i] !== (digits[i-1] + 1) % 10) {
+          return false;
+        }
+      }
+      return true;
+    }
+    
+    if (pattern === 'jihgfedcba') {
+      // Descending sequence
+      for (let i = 1; i < digits.length; i++) {
+        if (digits[i] !== (digits[i-1] - 1 + 10) % 10) {
+          return false;
+        }
+      }
+      return true;
+    }
+    
+    return false;
+  }
+  
+  checkCyclicStraightPattern(numberInput, pattern) {
+    const digits = numberInput.split('').map(d => parseInt(d));
+    
+    if (pattern === 'zabcdefghi') {
+      // Cyclic ascending (wraps around)
+      for (let i = 1; i < digits.length; i++) {
+        if (digits[i] !== (digits[i-1] + 1) % 10) {
+          return false;
+        }
+      }
+      return true;
+    }
+    
+    if (pattern === 'ihgfedcbaz') {
+      // Cyclic descending (wraps around)
+      for (let i = 1; i < digits.length; i++) {
+        if (digits[i] !== (digits[i-1] - 1 + 10) % 10) {
+          return false;
+        }
+      }
+      return true;
+    }
+    
+    return false;
+  }
+  
+  checkRhythmicBridgePattern(numberInput, pattern) {
+    if (pattern === 'abc???abc?') {
+      // First 3 digits repeat in positions 7-9
+      return numberInput.slice(0, 3) === numberInput.slice(6, 9);
+    }
+    
+    if (pattern === 'abcabc????') {
+      // First 3 digits repeat in positions 4-6
+      return numberInput.slice(0, 3) === numberInput.slice(3, 6);
+    }
+    
+    if (pattern === '???abcabc?') {
+      // Digits 4-6 repeat in positions 7-9
+      return numberInput.slice(3, 6) === numberInput.slice(6, 9);
+    }
+    
+    if (pattern === 'abcabcabc?') {
+      // First 3 digits repeat in positions 4-6 and 7-9
+      return numberInput.slice(0, 3) === numberInput.slice(3, 6) &&
+             numberInput.slice(0, 3) === numberInput.slice(6, 9);
+    }
+    
+    return false;
+  }
+  
+  checkThaiMobilePattern(numberInput, pattern) {
+    if (pattern === '06????????') {
+      return numberInput.startsWith('06');
+    }
+    
+    if (pattern === '08????????') {
+      return numberInput.startsWith('08');
+    }
+    
+    if (pattern === '09????????') {
+      return numberInput.startsWith('09');
+    }
+    
+    return false;
+  }
+  
+  showCheckerResult(message, type) {
+    console.log('showCheckerResult called:', message, type);
+    
+    if (!this.elements.checkerResult) {
+      console.error('Checker result element not found');
+      return;
+    }
+    
+    const resultDiv = this.elements.checkerResult;
+    resultDiv.className = `checker-result ${type}`;
+    resultDiv.style.display = 'block';
+    
+    // For simple messages (error, not-found, checking), use text content
+    if (type === 'error' || type === 'not-found' || type === 'checking') {
+      if (type === 'not-found') {
+        // Beautiful not-found message with enhanced styling
+        resultDiv.innerHTML = `
+          <div class="result-header-beautiful">
+            <div class="result-icon-beautiful">
+              <div class="icon-wrapper">
+                <span class="search-icon">🔍</span>
+                <span class="cross-icon">❌</span>
+              </div>
+            </div>
+            <div class="result-content-beautiful">
+              <div class="result-title-beautiful">ไม่พบหมายเลขในระบบ</div>
+              <div class="result-subtitle-beautiful">หมายเลข ${message.match(/\d{10}/)?.[0] || 'ที่กรอก'} ไม่ตรงกับ Pattern ใดๆ</div>
+              <div class="result-suggestions">
+                <div class="suggestion-item">💡 ลองตรวจสอบหมายเลขอีกครั้ง</div>
+                <div class="suggestion-item">🎯 หรือสร้าง Pattern ใหม่ด้านล่าง</div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        resultDiv.textContent = message;
+      }
+    } else {
+      // For other types, use text content as fallback
+      resultDiv.textContent = message;
+    }
+    
+    console.log('Result displayed:', type);
+    
+    // Auto-hide error messages after 5 seconds
+    if (type === 'error') {
+      setTimeout(() => {
+        resultDiv.style.display = 'none';
+      }, 5000);
     }
   }
 }

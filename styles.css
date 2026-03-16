@@ -71,6 +71,330 @@ section h2 {
   margin-bottom: 1.5rem;
   font-weight: 600;
 }
+
+/* Number Checker Section */
+.number-checker-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 2px solid var(--primary-color);
+  margin-bottom: 2rem;
+}
+
+.number-checker-section h2 {
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checker-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.checker-input-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.checker-input-row input {
+  flex: 1;
+  font-family: monospace;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+}
+
+.checker-input-row button {
+  white-space: nowrap;
+}
+
+.input-help {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: -0.5rem;
+}
+
+.checker-result {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.checker-result.found {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.checker-result.not-found {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.checker-result.not-found .result-icon {
+  color: #dc3545;
+}
+
+.checker-result.not-found .result-title {
+  color: #721c24;
+}
+
+.not-found-help {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f5c6cb;
+}
+
+.not-found-help p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.checker-result.error {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+}
+
+.checker-result.checking {
+  background: #d1ecf1;
+  border: 1px solid #bee5eb;
+  color: #0c5460;
+}
+
+/* Card Result Styles (restored) */
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #c3e6cb;
+}
+
+.result-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.result-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #155724;
+}
+
+.result-patterns {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pattern-match {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+}
+
+.pattern-number {
+  background: #28a745;
+  color: white;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.pattern-details {
+  flex: 1;
+}
+
+.pattern-line-card {
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #333;
+}
+
+/* Simple Result Styles (kept for other uses) */
+.result-header-simple {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.result-header-simple .result-icon {
+  font-size: 1.2rem;
+}
+
+.result-header-simple .result-title {
+  color: #155724;
+}
+
+.result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pattern-line {
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #333;
+}
+
+.pattern-line:not(:last-child) {
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Beautiful Result Styles for Not Found */
+.result-header-beautiful {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  border: 1px solid #e3f2fd;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.result-header-beautiful::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.1) 100%);
+  pointer-events: none;
+}
+
+.result-icon-beautiful {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  color: white;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+}
+
+.icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-icon {
+  font-size: 1.5rem;
+  opacity: 0.7;
+}
+
+.cross-icon {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 1rem;
+  background: #ff4757;
+  border-radius: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
+}
+
+.result-content-beautiful {
+  flex: 1;
+  color: white;
+}
+
+.result-title-beautiful {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.result-subtitle-beautiful {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.result-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.suggestion-item {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  font-weight: 400;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .result-header-beautiful {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+  
+  .result-icon-beautiful {
+    align-self: center;
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+  
+  .result-title-beautiful {
+    font-size: 1.2rem;
+  }
+  
+  .result-subtitle-beautiful {
+    font-size: 0.9rem;
+  }
+  
+  .suggestion-item {
+    font-size: 0.8rem;
+    justify-content: center;
+  }
+}
 /* Buttons */
 .btn {
   padding: 1rem 2rem;
@@ -1038,6 +1362,16 @@ footer {
   margin-top: 3rem;
 }
 
+footer p {
+  margin: 0.5rem 0;
+}
+
+footer .version {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  font-weight: 500;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .container {
@@ -1264,6 +1598,21 @@ footer {
 
   section {
     padding: 1rem;
+  }
+  
+  /* Number Checker Mobile */
+  .checker-input-row {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  
+  .checker-input-row input {
+    font-size: 1rem;
+  }
+  
+  .checker-result {
+    font-size: 0.9rem;
+    padding: 0.8rem;
   }
 
   header {
