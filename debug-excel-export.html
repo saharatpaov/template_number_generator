@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug Excel Export</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>Debug Excel Export</h1>
+        <p class="subtitle">Testing Excel export functionality</p>
+      </div>
+    </header>
+
+    <main>
+      <section class="input-section">
+        <div class="input-group">
+          <label for="pattern-select">เลือก Pattern:</label>
+          <select id="pattern-select" class="form-control">
+            <option value="">-- เลือก Pattern --</option>
+            <option value="AAA">AAA (Soloist)</option>
+            <option value="ABCD">ABCD (Full Straight)</option>
+            <option value="06XXXXXXXX">06XXXXXXXX (Thai Mobile No.)</option>
+          </select>
+          <button id="add-pattern-btn" class="btn btn-primary">เพิ่ม Pattern</button>
+        </div>
+        <div id="error-message" class="error-message" style="display: none;"></div>
+      </section>
+
+      <section class="results-section">
+        <div class="results-header">
+          <h2>ผลลัพธ์</h2>
+          <div class="export-buttons">
+            <button id="export-csv-btn" class="btn-export btn-export-csv" style="display: none;">
+              📄 Export CSV
+            </button>
+            <button id="export-excel-btn" class="btn-export btn-export-excel" style="display: none;">
+              📊 Export Excel
+            </button>
+          </div>
+        </div>
+        <div id="results-display" class="results-display">
+          <p>Add a pattern to see results and enable export buttons.</p>
+        </div>
+      </section>
+
+      <section class="debug-section">
+        <h3>Debug Information</h3>
+        <div id="debug-info" class="debug-info">
+          <p>Debug information will appear here...</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Loading Screen -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div class="loading-title">กำลังประมวลผล<span class="loading-dots"></span></div>
+      <div id="loading-message" class="loading-message">กำลังสร้างหมายเลขบัญชี</div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Initialize the application
+    init();
+    
+    // Debug Excel export functionality
+    setTimeout(() => {
+      console.log('Starting Excel export debug...');
+      
+      const debugInfo = document.getElementById('debug-info');
+      const csvBtn = document.getElementById('export-csv-btn');
+      const excelBtn = document.getElementById('export-excel-btn');
+      
+      let info = '<h4>Export Button Debug Info:</h4>';
+      info += `<p><strong>CSV Button:</strong></p>`;
+      info += `<p>- Element exists: ${csvBtn ? 'Yes' : 'No'}</p>`;
+      if (csvBtn) {
+        info += `<p>- Display style: ${csvBtn.style.display}</p>`;
+        info += `<p>- Has click listener: ${csvBtn.onclick ? 'Yes' : 'No'}</p>`;
+      }
+      
+      info += `<p><strong>Excel Button:</strong></p>`;
+      info += `<p>- Element exists: ${excelBtn ? 'Yes' : 'No'}</p>`;
+      if (excelBtn) {
+        info += `<p>- Display style: ${excelBtn.style.display}</p>`;
+        info += `<p>- Has click listener: ${excelBtn.onclick ? 'Yes' : 'No'}</p>`;
+      }
+      
+      info += `<p><strong>XLSX Library:</strong></p>`;
+      info += `<p>- XLSX available: ${typeof XLSX !== 'undefined' ? 'Yes' : 'No'}</p>`;
+      if (typeof XLSX !== 'undefined') {
+        info += `<p>- XLSX version: ${XLSX.version || 'Unknown'}</p>`;
+        info += `<p>- writeFile method: ${typeof XLSX.writeFile === 'function' ? 'Available' : 'Not available'}</p>`;
+      }
+      
+      info += `<p><strong>UIController:</strong></p>`;
+      info += `<p>- uiController exists: ${window.uiController ? 'Yes' : 'No'}</p>`;
+      if (window.uiController) {
+        info += `<p>- handleExcelExport method: ${typeof window.uiController.handleExcelExport === 'function' ? 'Available' : 'Not available'}</p>`;
+      }
+      
+      debugInfo.innerHTML = info;
+      
+      // Test manual Excel export
+      if (excelBtn) {
+        const testBtn = document.createElement('button');
+        testBtn.textContent = '🧪 Test Excel Export (Manual)';
+        testBtn.className = 'btn btn-secondary';
+        testBtn.style.marginTop = '10px';
+        testBtn.onclick = async () => {
+          console.log('Manual Excel export test started...');
+          
+          try {
+            // Create test data
+            const testData = [
+              { pattern_type: 'Soloist', pattern: 'AAA', account_number: '1112223333' },
+              { pattern_type: 'Soloist', pattern: 'AAA', account_number: '2223334444' },
+              { pattern_type: 'Full Straight', pattern: 'ABCD', account_number: '1234567890' }
+            ];
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            const wsData = [
+              ['pattern_type', 'pattern', 'account_number'],
+              ...testData.map(row => [row.pattern_type, row.pattern, row.account_number])
+            ];
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            
+            // Set column widths
+            ws['!cols'] = [
+              { wch: 18 }, // pattern_type
+              { wch: 12 }, // pattern
+              { wch: 15 }  // account_number
+            ];
+            
+            XLSX.utils.book_append_sheet(wb, ws, 'Account Numbers');
+            
+            // Generate filename
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            const filename = `test-export-${timestamp}.xlsx`;
+            
+            // Try to download
+            XLSX.writeFile(wb, filename);
+            
+            console.log('Manual Excel export completed successfully!');
+            debugInfo.innerHTML += `<p style="color: green;"><strong>✓ Manual Excel export test: SUCCESS</strong></p>`;
+            
+          } catch (error) {
+            console.error('Manual Excel export failed:', error);
+            debugInfo.innerHTML += `<p style="color: red;"><strong>✗ Manual Excel export test: FAILED</strong></p>`;
+            debugInfo.innerHTML += `<p style="color: red;">Error: ${error.message}</p>`;
+          }
+        };
+        
+        debugInfo.appendChild(testBtn);
+      }
+      
+    }, 1000);
+  </script>
+</body>
+</html>

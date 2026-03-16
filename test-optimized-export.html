@@ -3,12 +3,111 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Account Number Generator</title>
+  <title>Test Optimized Export</title>
   <link rel="stylesheet" href="styles.css">
   <!-- SheetJS for Excel export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>Test Optimized Export</h1>
+        <p class="subtitle">Testing optimized CSV and Excel export for large datasets</p>
+      </div>
+    </header>
+
+    <main>
+      <!-- Pattern Selection Area -->
+      <section class="input-section">
+        <h2>เลือก Pattern</h2>
+        <div class="input-group">
+          <label for="pattern-select">เลือก Pattern Type:</label>
+          <select id="pattern-select">
+            <option value="">-- เลือก Pattern --</option>
+            <!-- Large dataset patterns for testing -->
+            <option value="06????????" data-type="Thai Mobile No.">06?-???-???? (10M numbers)</option>
+            <option value="08????????" data-type="Thai Mobile No.">08?-???-???? (10M numbers)</option>
+            <option value="09????????" data-type="Thai Mobile No.">09?-???-???? (10M numbers)</option>
+            <option value="aaaaaaaaaa" data-type="The Soloist">aaa-aaa-aaaa (10 numbers)</option>
+            <option value="abcdefghij" data-type="The Full Straight">abc-def-ghij (2 numbers)</option>
+          </select>
+          <button id="add-pattern-btn" class="btn btn-primary">เพิ่ม Pattern</button>
+        </div>
+        <div id="error-message" class="error-message" role="alert" aria-live="assertive"></div>
+      </section>
+
+      <!-- Pattern List Section -->
+      <section class="pattern-list-section">
+        <h2>Patterns ที่เพิ่มแล้ว</h2>
+        <div id="pattern-list" class="pattern-list"></div>
+      </section>
+
+      <!-- Results Area -->
+      <section class="results-section">
+        <div class="results-header">
+          <h2>ผลลัพธ์</h2>
+          <div class="export-buttons">
+            <button id="export-csv-btn" class="btn-export btn-export-csv" style="display: none;">
+              📄 Export CSV
+            </button>
+            <button id="export-excel-btn" class="btn-export btn-export-excel" style="display: none;">
+              📊 Export Excel
+            </button>
+          </div>
+        </div>
+        <div id="results-display" class="results-display"></div>
+      </section>
+
+      <!-- Optimization Information -->
+      <section class="input-section">
+        <h2>Export Optimizations</h2>
+        <div style="background: #e8f5e8; padding: 1rem; border-radius: 8px; border-left: 4px solid #4caf50;">
+          <h3>Performance Improvements:</h3>
+          <ul>
+            <li>✅ <strong>Async Processing:</strong> Non-blocking operations for large datasets</li>
+            <li>✅ <strong>Batch Processing:</strong> Process data in chunks to prevent memory issues</li>
+            <li>✅ <strong>Progress Updates:</strong> Real-time progress feedback during export</li>
+            <li>✅ <strong>Memory Optimization:</strong> Efficient data structures for large files</li>
+            <li>✅ <strong>Duplicate Removal:</strong> Optimized Set-based deduplication</li>
+            <li>✅ <strong>Excel Compression:</strong> File compression for large Excel files</li>
+            <li>✅ <strong>Array of Arrays:</strong> More efficient Excel data format</li>
+          </ul>
+        </div>
+        
+        <div style="background: #fff3e0; padding: 1rem; border-radius: 8px; border-left: 4px solid #ff9800; margin-top: 1rem;">
+          <h3>Large Dataset Handling:</h3>
+          <ul>
+            <li><strong>Small datasets (&lt; 100k records):</strong> Standard processing</li>
+            <li><strong>Large datasets (&gt; 100k records):</strong> 
+              <ul>
+                <li>Smaller batch sizes (5k-10k per batch)</li>
+                <li>Progress updates every 2 batches</li>
+                <li>10ms delays between batches to prevent UI blocking</li>
+                <li>Excel compression enabled</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div style="background: #f3e5f5; padding: 1rem; border-radius: 8px; border-left: 4px solid #9c27b0; margin-top: 1rem;">
+          <h3>How to Test:</h3>
+          <ol>
+            <li>Add a Thai Mobile pattern (06, 08, or 09) for large dataset testing</li>
+            <li>Or add multiple small patterns for moderate dataset testing</li>
+            <li>Click export buttons and observe:
+              <ul>
+                <li>Loading screen with progress updates</li>
+                <li>Non-blocking UI during processing</li>
+                <li>Successful file download</li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+      </section>
+    </main>
+  </div>
+
   <!-- Loading Screen -->
   <div id="loading-overlay" class="loading-overlay">
     <div class="loading-content">
@@ -161,107 +260,6 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <div class="container">
-    <header>
-      <div class="header-content">
-        <h1>Account Number Generator</h1>
-      </div>
-    </header>
-
-    <main>
-      <!-- Pattern Selection Area -->
-      <section class="input-section">
-        <h2>เลือก Pattern</h2>
-        <div class="input-group">
-          <label for="pattern-select">เลือก Pattern Type:</label>
-          <select id="pattern-select" aria-describedby="pattern-help">
-            <option value="">-- เลือก Pattern --</option>
-            
-            <!-- The Soloist Patterns -->
-            <optgroup label="1. The Soloist">
-              <option value="aaaaaaaaaa" data-type="The Soloist">aaa-aaa-aaaa (All 10 digits identical)</option>
-              <option value="?bbbbbbbbb" data-type="The Soloist">?bb-bbb-bbbb (All 9 digits identical)</option>
-              <option value="??dddddddd" data-type="The Soloist">??d-ddd-dddd (All 8 digits identical)</option>
-              <option value="???ddddddd" data-type="The Soloist">???-ddd-dddd (All 7 digits identical)</option>
-              <option value="????eeeeee" data-type="The Soloist">????-ee-eeee (All 6 digits identical)</option>
-              <option value="?????fffff" data-type="The Soloist">?????-f-ffff (All 5 digits identical)</option>
-              <option value="??????gggg" data-type="The Soloist">??????-gggg (All 4 digits identical - Block-ending)</option>
-            </optgroup>
-            
-            <!-- Hyphen-separated Patterns -->
-            <optgroup label="2. Hyphen-separated">
-              <option value="bbbaaaaaaa" data-type="Hyphen-separated">bbb-aaa-aaaa (2 distinct digits across blocks)</option>
-              <option value="bbbbbaaaaa" data-type="Hyphen-separated">bbb-bbb-aaaa (2 distinct digits across blocks)</option>
-              <option value="bbbaaabbbb" data-type="Hyphen-separated">bbb-aaa-bbbb (2 distinct digits across blocks)</option>
-              <option value="aaabbbcccc" data-type="Hyphen-separated">aaa-bbb-cccc (3 distinct digits across blocks)</option>
-              <option value="bbb???bbbb" data-type="Hyphen-separated">bbb-???-bbbb (First and last blocks identical)</option>
-            </optgroup>
-            
-            <!-- The Full Straight Patterns -->
-            <optgroup label="3. The Full Straight">
-              <option value="abcdefghij" data-type="The Full Straight">abc-def-ghij (Ascending)</option>
-              <option value="jihgfedcba" data-type="The Full Straight">jih-gfe-dcba (Descending)</option>
-            </optgroup>
-            
-            <!-- Cyclic Straight Patterns -->
-            <optgroup label="4. Cyclic Straight">
-              <option value="zabcdefghi" data-type="Cyclic Straight">zab-cde-fghi (Cyclic ascending)</option>
-              <option value="ihgfedcbaz" data-type="Cyclic Straight">ihg-fed-cbaz (Cyclic descending)</option>
-            </optgroup>
-            
-            <!-- The Rhythmic Bridge Patterns -->
-            <optgroup label="5. The Rhythmic Bridge">
-              <option value="abc???abc?" data-type="The Rhythmic Bridge">abc-???-abc? (Repeating pattern 2-3 block)</option>
-              <option value="abcabc????" data-type="The Rhythmic Bridge">abc-abc-???? (Repeating pattern front-middle)</option>
-              <option value="???abcabc?" data-type="The Rhythmic Bridge">???-abc-abc? (Repeating pattern middle-end)</option>
-              <option value="abcabcabc?" data-type="The Rhythmic Bridge">abc-abc-abc? (Fully linked on 3 blocks)</option>
-            </optgroup>
-            
-            <!-- Thai Mobile No. Patterns -->
-            <optgroup label="6. Thai Mobile No.">
-              <option value="06????????" data-type="Thai Mobile No.">06?-???-???? (Started with 06)</option>
-              <option value="08????????" data-type="Thai Mobile No.">08?-???-???? (Started with 08)</option>
-              <option value="09????????" data-type="Thai Mobile No.">09?-???-???? (Started with 09)</option>
-            </optgroup>
-          </select>
-          <small id="pattern-help">เลือก pattern จากรายการที่กำหนดไว้</small>
-          <button id="add-pattern-btn" class="btn btn-primary">เพิ่ม Pattern</button>
-        </div>
-        <!-- Error messages will be displayed here -->
-        <div id="error-message" class="error-message" role="alert" aria-live="assertive"></div>
-      </section>
-
-      <!-- Pattern List Section -->
-      <section class="pattern-list-section">
-        <h2>Patterns ที่เพิ่มแล้ว</h2>
-        <div id="pattern-list" class="pattern-list"></div>
-      </section>
-
-      <!-- Results Area -->
-      <section class="results-section">
-        <div class="results-header">
-          <h2>ผลลัพธ์</h2>
-          <div class="export-buttons">
-            <button id="export-csv-btn" class="btn-export btn-export-csv" style="display: none;">
-              📄 Export CSV
-            </button>
-            <button id="export-excel-btn" class="btn-export btn-export-excel" style="display: none;">
-              📊 Export Excel
-            </button>
-          </div>
-        </div>
-        <div id="results-display" class="results-display"></div>
-        
-        <!-- Performance Metrics Display -->
-        <div id="performance-display" class="performance-display" style="display: none;"></div>
-      </section>
-    </main>
-
-    <footer>
-      <p>&copy; 2026 Saharat Paovarangkul</p>
-    </footer>
   </div>
 
   <script src="performance-monitor.js"></script>

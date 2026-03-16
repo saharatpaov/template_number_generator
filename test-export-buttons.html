@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Export Buttons</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>Test Export Buttons</h1>
+      </div>
+    </header>
+
+    <main>
+      <!-- Pattern Selection Area -->
+      <section class="input-section">
+        <h2>เลือก Pattern</h2>
+        <div class="input-group">
+          <label for="pattern-select">เลือก Pattern Type:</label>
+          <select id="pattern-select">
+            <option value="">-- เลือก Pattern --</option>
+            <option value="aaaaaaaaaa" data-type="The Soloist">aaa-aaa-aaaa (All 10 digits identical)</option>
+          </select>
+          <button id="add-pattern-btn" class="btn btn-primary">เพิ่ม Pattern</button>
+        </div>
+        <div id="error-message" class="error-message" role="alert" aria-live="assertive"></div>
+      </section>
+
+      <!-- Pattern List Section -->
+      <section class="pattern-list-section">
+        <h2>Patterns ที่เพิ่มแล้ว</h2>
+        <div id="pattern-list" class="pattern-list"></div>
+      </section>
+
+      <!-- Results Area -->
+      <section class="results-section">
+        <div class="results-header">
+          <h2>ผลลัพธ์</h2>
+          <div class="export-buttons">
+            <button id="export-csv-btn" class="btn-export btn-export-csv" style="display: none;">
+              📄 Export CSV
+            </button>
+            <button id="export-excel-btn" class="btn-export btn-export-excel" style="display: none;">
+              📊 Export Excel
+            </button>
+          </div>
+        </div>
+        <div id="results-display" class="results-display"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="performance-monitor.js"></script>
+  <script src="lucky-number-system.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // Initialize the application when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      init();
+      
+      // Test export button visibility
+      setTimeout(() => {
+        console.log('Testing export button visibility...');
+        
+        const csvBtn = document.getElementById('export-csv-btn');
+        const excelBtn = document.getElementById('export-excel-btn');
+        
+        console.log('CSV Button display:', csvBtn.style.display);
+        console.log('Excel Button display:', excelBtn.style.display);
+        
+        // Add a pattern to test if buttons become visible
+        const patternSelect = document.getElementById('pattern-select');
+        patternSelect.value = 'aaaaaaaaaa';
+        
+        // Trigger add pattern
+        if (window.uiController) {
+          window.uiController.handleAddPattern();
+          
+          setTimeout(() => {
+            console.log('After adding pattern:');
+            console.log('CSV Button display:', csvBtn.style.display);
+            console.log('Excel Button display:', excelBtn.style.display);
+            
+            // Force show buttons for testing
+            csvBtn.style.display = 'block';
+            excelBtn.style.display = 'block';
+            console.log('Buttons forced to show');
+          }, 1000);
+        }
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

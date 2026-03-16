@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visible Export Buttons Test</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Account Number Generator</h1>
+      <div class="subtitle">Export Buttons Visibility Test</div>
+    </header>
+
+    <main>
+      <!-- Pattern List Section -->
+      <section class="pattern-list-section">
+        <h2>Patterns ที่เพิ่มแล้ว</h2>
+        <div class="pattern-list">
+          
+          <div class="pattern-item">
+            <div class="pattern-info">
+              <div class="pattern-text">aaaaaaaaaa</div>
+              <div class="pattern-type">The Soloist</div>
+            </div>
+            <div class="pattern-actions">
+              <div class="pattern-count">10 numbers</div>
+              <button class="remove-pattern-btn">ลบ</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Results Area with Visible Export Buttons -->
+      <section class="results-section">
+        <div class="results-header">
+          <h2>ผลลัพธ์</h2>
+          <div class="export-buttons">
+            <button id="export-csv-btn" class="btn-export btn-export-csv">
+              📄 Export CSV
+            </button>
+            <button id="export-excel-btn" class="btn-export btn-export-excel">
+              📊 Export Excel
+            </button>
+          </div>
+        </div>
+        
+        <div class="results-display">
+          
+          <!-- Result Group 1 -->
+          <div class="result-group">
+            <h3>aaaaaaaaaa (The Soloist) - 10 numbers</h3>
+            
+            <div class="numbers-grid">
+              <div class="number-item clickable">000-000-0000</div>
+              <div class="number-item clickable">111-111-1111</div>
+              <div class="number-item clickable">222-222-2222</div>
+              <div class="number-item clickable">333-333-3333</div>
+              <div class="number-item clickable">444-444-4444</div>
+              <div class="number-item clickable">555-555-5555</div>
+              <div class="number-item clickable">666-666-6666</div>
+              <div class="number-item clickable">777-777-7777</div>
+              <div class="number-item clickable premium-baramee">
+                888-888-8888
+                <div class="main-result-badge">🏅</div>
+              </div>
+              <div class="number-item clickable">999-999-9999</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 Saharat Paovarangkul</p>
+    </footer>
+  </div>
+
+  <script>
+    // Sample data for export
+    function getAllNumbersData() {
+      const data = [];
+      const resultGroups = document.querySelectorAll('.result-group');
+      
+      resultGroups.forEach(group => {
+        const groupTitle = group.querySelector('h3').textContent;
+        const pattern = groupTitle.split(' ')[0];
+        const patternType = groupTitle.match(/\((.*?)\)/)?.[1] || 'Unknown';
+        const numberItems = group.querySelectorAll('.number-item');
+        
+        numberItems.forEach(item => {
+          const number = item.textContent.trim().replace('🏅', '');
+          const isPremium = item.classList.contains('premium-baramee');
+          
+          // Calculate sum
+          const digits = number.replace(/-/g, '').split('').map(d => parseInt(d));
+          const sum = digits.reduce((a, b) => a + b, 0);
+          
+          // Determine rating
+          let rating = 'ติดขัด';
+          if (sum >= 80) rating = 'บารมี';
+          else if (sum >= 60) rating = 'เศรษฐี';
+          else if (sum >= 40) rating = 'วาสนา';
+          else if (sum >= 20) rating = 'พอตัว';
+          
+          data.push({
+            'หมายเลขบัญชี': number,
+            'Pattern': pattern,
+            'Pattern Type': patternType,
+            'ผลรวม': sum,
+            'ระดับ': rating,
+            'Premium': isPremium ? 'Yes' : 'No'
+          });
+        });
+      });
+      
+      return data;
+    }
+
+    // CSV Export Function
+    function exportToCSV() {
+      console.log('CSV Export clicked!');
+      const data = getAllNumbersData();
+      
+      if (data.length === 0) {
+        alert('ไม่มีข้อมูลสำหรับ export');
+        return;
+      }
+
+      // Create CSV content
+      const headers = Object.keys(data[0]);
+      const csvContent = [
+        '\ufeff', // BOM for UTF-8
+        headers.join(','),
+        ...data.map(row => 
+          headers.map(header => {
+            const value = row[header] || '';
+            return `"${value.toString().replace(/"/g, '""')}"`;
+          }).join(',')
+        )
+      ].join('\n');
+
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `account-numbers-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      showExportMessage('CSV file exported successfully!', 'success');
+    }
+
+    // Excel Export Function
+    function exportToExcel() {
+      console.log('Excel Export clicked!');
+      const data = getAllNumbersData();
+      
+      if (data.length === 0) {
+        alert('ไม่มีข้อมูลสำหรับ export');
+        return;
+      }
+
+      // Create workbook
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(data);
+      
+      // Set column widths
+      const colWidths = [
+        { wch: 15 }, { wch: 12 }, { wch: 18 }, 
+        { wch: 8 }, { wch: 10 }, { wch: 8 }
+      ];
+      ws['!cols'] = colWidths;
+      
+      XLSX.utils.book_append_sheet(wb, ws, 'Account Numbers');
+      
+      const fileName = `account-numbers-${new Date().toISOString().split('T')[0]}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+      
+      showExportMessage('Excel file exported successfully!', 'success');
+    }
+
+    // Show export message
+    function showExportMessage(message, type) {
+      const messageDiv = document.createElement('div');
+      messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        background: ${type === 'success' ? '#4caf50' : '#f44336'};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 10000;
+        font-weight: 600;
+      `;
+      messageDiv.textContent = message;
+      document.body.appendChild(messageDiv);
+      
+      setTimeout(() => {
+        if (document.body.contains(messageDiv)) {
+          document.body.removeChild(messageDiv);
+        }
+      }, 3000);
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded, setting up export buttons...');
+      
+      // Export button listeners
+      const csvBtn = document.getElementById('export-csv-btn');
+      const excelBtn = document.getElementById('export-excel-btn');
+      
+      if (csvBtn) {
+        console.log('CSV button found, adding listener');
+        csvBtn.addEventListener('click', exportToCSV);
+      } else {
+        console.log('CSV button NOT found!');
+      }
+      
+      if (excelBtn) {
+        console.log('Excel button found, adding listener');
+        excelBtn.addEventListener('click', exportToExcel);
+      } else {
+        console.log('Excel button NOT found!');
+      }
+    });
+
+    // Number click functionality
+    document.querySelectorAll('.number-item.clickable').forEach(item => {
+      item.addEventListener('click', function() {
+        const number = this.textContent.trim().replace('🏅', '');
+        alert(`คลิกเลข: ${number}`);
+      });
+    });
+  </script>
+
+  <style>
+    /* Debug styles to make buttons more visible */
+    .export-buttons {
+      background: rgba(233, 30, 99, 0.1);
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 2px dashed var(--primary-pink);
+    }
+    
+    .btn-export {
+      min-width: 120px;
+      font-size: 1rem !important;
+      padding: 0.8rem 1.2rem !important;
+    }
+    
+    .results-header {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+  </style>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug Export Buttons</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>Debug Export Buttons</h1>
+      </div>
+    </header>
+
+    <main>
+      <!-- Pattern Selection Area -->
+      <section class="input-section">
+        <h2>เลือก Pattern</h2>
+        <div class="input-group">
+          <label for="pattern-select">เลือก Pattern Type:</label>
+          <select id="pattern-select">
+            <option value="">-- เลือก Pattern --</option>
+            <option value="aaaaaaaaaa" data-type="The Soloist">aaa-aaa-aaaa (All 10 digits identical)</option>
+          </select>
+          <button id="add-pattern-btn" class="btn btn-primary">เพิ่ม Pattern</button>
+        </div>
+        <div id="error-message" class="error-message" role="alert" aria-live="assertive"></div>
+      </section>
+
+      <!-- Pattern List Section -->
+      <section class="pattern-list-section">
+        <h2>Patterns ที่เพิ่มแล้ว</h2>
+        <div id="pattern-list" class="pattern-list"></div>
+      </section>
+
+      <!-- Results Area -->
+      <section class="results-section">
+        <div class="results-header">
+          <h2>ผลลัพธ์</h2>
+          <div class="export-buttons">
+            <button id="export-csv-btn" class="btn-export btn-export-csv" style="display: block;">
+              📄 Export CSV
+            </button>
+            <button id="export-excel-btn" class="btn-export btn-export-excel" style="display: block;">
+              📊 Export Excel
+            </button>
+          </div>
+        </div>
+        <div id="results-display" class="results-display">
+          <p>Export buttons should be visible above this text.</p>
+        </div>
+      </section>
+
+      <!-- Debug Info -->
+      <section class="input-section">
+        <h2>Debug Information</h2>
+        <div id="debug-info" style="background: #f5f5f5; padding: 1rem; border-radius: 8px; font-family: monospace;">
+          <p>Loading debug information...</p>
+        </div>
+        <button id="test-buttons-btn" class="btn btn-secondary" style="margin-top: 1rem;">Test Button Functionality</button>
+      </section>
+    </main>
+  </div>
+
+  <script src="performance-monitor.js"></script>
+  <script src="lucky-number-system.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // Initialize the application when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      init();
+      
+      // Debug information
+      setTimeout(() => {
+        const debugInfo = document.getElementById('debug-info');
+        const csvBtn = document.getElementById('export-csv-btn');
+        const excelBtn = document.getElementById('export-excel-btn');
+        
+        let info = '<h3>Export Button Debug Info:</h3>';
+        info += `<p><strong>CSV Button:</strong></p>`;
+        info += `<p>- Element exists: ${csvBtn ? 'Yes' : 'No'}</p>`;
+        info += `<p>- Display style: ${csvBtn ? csvBtn.style.display : 'N/A'}</p>`;
+        info += `<p>- Computed display: ${csvBtn ? window.getComputedStyle(csvBtn).display : 'N/A'}</p>`;
+        info += `<p>- Visible: ${csvBtn ? (csvBtn.offsetWidth > 0 && csvBtn.offsetHeight > 0) : 'N/A'}</p>`;
+        
+        info += `<p><strong>Excel Button:</strong></p>`;
+        info += `<p>- Element exists: ${excelBtn ? 'Yes' : 'No'}</p>`;
+        info += `<p>- Display style: ${excelBtn ? excelBtn.style.display : 'N/A'}</p>`;
+        info += `<p>- Computed display: ${excelBtn ? window.getComputedStyle(excelBtn).display : 'N/A'}</p>`;
+        info += `<p>- Visible: ${excelBtn ? (excelBtn.offsetWidth > 0 && excelBtn.offsetHeight > 0) : 'N/A'}</p>`;
+        
+        info += `<p><strong>UIController:</strong></p>`;
+        info += `<p>- UIController exists: ${window.uiController ? 'Yes' : 'No'}</p>`;
+        if (window.uiController && window.uiController.elements) {
+          info += `<p>- exportCsvBtn cached: ${window.uiController.elements.exportCsvBtn ? 'Yes' : 'No'}</p>`;
+          info += `<p>- exportExcelBtn cached: ${window.uiController.elements.exportExcelBtn ? 'Yes' : 'No'}</p>`;
+        }
+        
+        debugInfo.innerHTML = info;
+        
+        // Test button functionality
+        document.getElementById('test-buttons-btn').addEventListener('click', () => {
+          console.log('Testing button functionality...');
+          
+          // Test CSV button click
+          if (csvBtn) {
+            console.log('CSV button click test');
+            csvBtn.click();
+          }
+          
+          // Test Excel button click
+          if (excelBtn) {
+            console.log('Excel button click test');
+            excelBtn.click();
+          }
+          
+          // Test toggle function
+          if (window.uiController) {
+            console.log('Testing toggleExportButton...');
+            window.uiController.toggleExportButton(true);
+            
+            setTimeout(() => {
+              debugInfo.innerHTML += `<p><strong>After toggleExportButton(true):</strong></p>`;
+              debugInfo.innerHTML += `<p>- CSV Display: ${csvBtn.style.display}</p>`;
+              debugInfo.innerHTML += `<p>- Excel Display: ${excelBtn.style.display}</p>`;
+            }, 100);
+          }
+        });
+        
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

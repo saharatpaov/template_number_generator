@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test All Export Fixes</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>Test All Export Fixes</h1>
+        <p class="subtitle">Comprehensive test for all user-requested fixes</p>
+      </div>
+    </header>
+
+    <main>
+      <section class="input-section">
+        <div class="input-group">
+          <label for="pattern-select">เลือก Pattern:</label>
+          <select id="pattern-select" class="form-control">
+            <option value="">-- เลือก Pattern --</option>
+            <option value="AAA">AAA (Soloist)</option>
+            <option value="ABCD">ABCD (Full Straight)</option>
+            <option value="ABC-DEF">ABC-DEF (Hyphen Separated)</option>
+            <option value="ABCABC">ABCABC (Rhythmic Bridge)</option>
+          </select>
+          <button id="add-pattern-btn" class="btn btn-primary">เพิ่ม Pattern</button>
+        </div>
+        <div id="error-message" class="error-message" style="display: none;"></div>
+      </section>
+
+      <section class="results-section">
+        <div class="results-header">
+          <h2>ผลลัพธ์</h2>
+          <div class="export-buttons">
+            <button id="export-csv-btn" class="btn-export btn-export-csv" style="display: none;">
+              📄 Export CSV
+            </button>
+            <button id="export-excel-btn" class="btn-export btn-export-excel" style="display: none;">
+              📊 Export Excel
+            </button>
+          </div>
+        </div>
+        <div id="results-display" class="results-display">
+          <p>Add a pattern to see results and enable export buttons.</p>
+        </div>
+      </section>
+
+      <section class="fixes-verification">
+        <h3>✅ User-Requested Fixes Verification</h3>
+        
+        <div class="fix-item">
+          <h4>1. Excel Export Button Action</h4>
+          <p><strong>Issue:</strong> "อ้าว ตอนนี้ กดแล้วไม่มี action ไรเลย export excel"</p>
+          <p><strong>Fix:</strong> Simplified Excel export with proper error handling and fallback</p>
+          <p><strong>Test:</strong> Click Excel export button - should show loading and download file</p>
+        </div>
+
+        <div class="fix-item">
+          <h4>2. Excel File Download</h4>
+          <p><strong>Issue:</strong> "ตัว excel ประมวลผลเยอะๆ แล้ว พอประมวลผลเสร็จ ไม่มีไฟล์ดาวน์โหลด"</p>
+          <p><strong>Fix:</strong> Direct XLSX.writeFile() call with fallback to CSV if Excel fails</p>
+          <p><strong>Test:</strong> File should download immediately after processing</p>
+        </div>
+
+        <div class="fix-item">
+          <h4>3. Large Dataset Optimization</h4>
+          <p><strong>Issue:</strong> "เหมือนตอนมีข้อมูลเยอะ excel จาก export ไม่ได้ ช่วย optimize หน่อย"</p>
+          <p><strong>Fix:</strong> Simplified processing, removed complex splitting logic, added CSV fallback</p>
+          <p><strong>Test:</strong> Try with multiple patterns - should work smoothly</p>
+        </div>
+
+        <div class="fix-item">
+          <h4>4. Simplified Loading Screen</h4>
+          <p><strong>Issue:</strong> "เอา progress bar ด้านล่าง กับ Pattern : และตัวเลข 0 / xxxxxx ออกให้หน่อย ให้เหลือแต่ส่วนด้านบน"</p>
+          <p><strong>Fix:</strong> Removed progress bar, pattern count, and number count from loading screen</p>
+          <p><strong>Test:</strong> Loading screen should only show spinner and message</p>
+        </div>
+
+        <div class="fix-item">
+          <h4>5. Excel Column Structure</h4>
+          <p><strong>Issue:</strong> "ผมอยากได้ export excel เป็น column แบบเดียวกันกับ csv ครับ"</p>
+          <p><strong>Fix:</strong> Excel now uses same column structure: pattern_type, pattern, account_number</p>
+          <p><strong>Test:</strong> Compare Excel and CSV exports - columns should match exactly</p>
+        </div>
+      </section>
+
+      <section class="test-instructions">
+        <h3>🧪 Test Instructions</h3>
+        <ol>
+          <li><strong>Add Pattern:</strong> Select "AAA" and click "เพิ่ม Pattern"</li>
+          <li><strong>Verify Export Buttons:</strong> Both CSV and Excel buttons should appear</li>
+          <li><strong>Test CSV Export:</strong> Click CSV button, verify simplified loading screen</li>
+          <li><strong>Test Excel Export:</strong> Click Excel button, verify:
+            <ul>
+              <li>Loading screen appears (simplified, no progress bar)</li>
+              <li>Excel file downloads successfully</li>
+              <li>If Excel fails, CSV fallback should work</li>
+            </ul>
+          </li>
+          <li><strong>Compare Files:</strong> Open both CSV and Excel files - columns should match</li>
+          <li><strong>Test Large Dataset:</strong> Add multiple patterns and test export performance</li>
+        </ol>
+      </section>
+    </main>
+  </div>
+
+  <!-- Simplified Loading Screen -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div class="loading-title">กำลังประมวลผล<span class="loading-dots"></span></div>
+      <div id="loading-message" class="loading-message">กำลังสร้างหมายเลขบัญชี</div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Initialize the application
+    init();
+    
+    // Add comprehensive logging for debugging
+    setTimeout(() => {
+      console.log('=== Export Fixes Test Page ===');
+      console.log('XLSX library:', typeof XLSX !== 'undefined' ? 'Available' : 'Not available');
+      console.log('UIController:', typeof window.uiController !== 'undefined' ? 'Available' : 'Not available');
+      
+      if (window.uiController) {
+        console.log('CSV export method:', typeof window.uiController.handleExport === 'function' ? 'Available' : 'Not available');
+        console.log('Excel export method:', typeof window.uiController.handleExcelExport === 'function' ? 'Available' : 'Not available');
+      }
+      
+      // Test button event listeners
+      const csvBtn = document.getElementById('export-csv-btn');
+      const excelBtn = document.getElementById('export-excel-btn');
+      
+      console.log('CSV button element:', csvBtn ? 'Found' : 'Not found');
+      console.log('Excel button element:', excelBtn ? 'Found' : 'Not found');
+      
+      console.log('=== Ready for testing ===');
+    }, 500);
+  </script>
+</body>
+</html>

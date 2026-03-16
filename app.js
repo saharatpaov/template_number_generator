@@ -2224,6 +2224,107 @@ class CSVExporter {
     
     return value;
   }
+
+  /**
+   * Async export for large datasets with progress callback
+   * @param {Array<{pattern: string, patternType: string, numbers: string[]}>} data
+   * @param {Function} progressCallback - Callback function for progress updates
+   * @returns {Promise<void>} Promise that resolves when export is complete
+   */
+  async exportAsync(data, progressCallback) {
+    try {
+      if (!data || data.length === 0) {
+        throw new Error('No data to export');
+      }
+
+      // Calculate total numbers
+      const totalNumbers = data.reduce((sum, group) => sum + group.numbers.length, 0);
+      const batchSize = 10000; // Process in smaller batches for large datasets
+      
+      // Generate CSV content with progress updates
+      const csvContent = await this.generateCSVAsync(data, progressCallback);
+      
+      // Create filename with timestamp
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+      const filename = `account-numbers-${timestamp}.csv`;
+      
+      // Trigger download
+      this.downloadFile(csvContent, filename);
+      
+    } catch (error) {
+      console.error('CSV async export failed:', error.message);
+      throw new Error(`Failed to export CSV: ${error.message}`);
+    }
+  }
+
+  /**
+   * Generates CSV content asynchronously with progress updates
+   * @param {Array<{pattern: string, patternType: string, numbers: string[]}>} data
+   * @param {Function} progressCallback - Callback function for progress updates
+   * @returns {Promise<string>} CSV formatted string
+   */
+  async generateCSVAsync(data, progressCallback) {
+    // Calculate total rows for progress tracking
+    const totalNumbers = data.reduce((sum, group) => sum + group.numbers.length, 0);
+    const batchSize = 5000; // Smaller batches for better progress updates
+    
+    // Use array for better performance
+    const rows = ['pattern_type,pattern,account_number']; // Header
+    const seenNumbers = new Set();
+    
+    let processedCount = 0;
+    
+    for (const patternGroup of data) {
+      const { pattern, patternType, numbers } = patternGroup;
+      
+      // Pre-escape pattern and type once (performance optimization)
+      const escapedPattern = this.escapeCSVValue(pattern);
+      const escapedPatternType = this.escapeCSVValue(patternType);
+      
+      // Process numbers in batches
+      for (let i = 0; i < numbers.length; i += batchSize) {
+        const batch = numbers.slice(i, i + batchSize);
+        
+        for (const accountNumber of batch) {
+          // Skip if we've already seen this account number
+          if (seenNumbers.has(accountNumber)) {
+            continue;
+          }
+          
+          // Mark this number as seen
+          seenNumbers.add(accountNumber);
+          
+          // Add row: pattern_type, pattern, account_number
+          rows.push(escapedPatternType + ',' + escapedPattern + ',' + this.escapeCSVValue(accountNumber));
+          processedCount++;
+        }
+        
+        // Update progress and yield control
+        if (progressCallback && i % (batchSize * 2) === 0) {
+          progressCallback({
+            current: processedCount,
+            total: totalNumbers,
+            percentage: Math.round((processedCount / totalNumbers) * 100)
+          });
+          
+          // Allow other operations to run
+          await new Promise(resolve => setTimeout(resolve, 5));
+        }
+      }
+    }
+    
+    // Final progress update
+    if (progressCallback) {
+      progressCallback({
+        current: processedCount,
+        total: totalNumbers,
+        percentage: 100
+      });
+    }
+    
+    // Join all rows with newlines
+    return rows.join('\n');
+  }
 }
 
 /**
@@ -2247,16 +2348,14 @@ class UIController {
       errorMessage: document.getElementById('error-message'),
       patternList: document.getElementById('pattern-list'),
       resultsDisplay: document.getElementById('results-display'),
-      exportBtn: document.getElementById('export-btn'),
+      exportCsvBtn: document.getElementById('export-csv-btn'),
+      exportExcelBtn: document.getElementById('export-excel-btn'),
     };
 
     // Cache loading elements
     this.loadingElements = {
       overlay: document.getElementById('loading-overlay'),
       message: document.getElementById('loading-message'),
-      progressBar: document.getElementById('loading-progress-bar'),
-      pattern: document.getElementById('loading-pattern'),
-      count: document.getElementById('loading-count'),
     };
 
     // Set up event listeners
@@ -2266,7 +2365,7 @@ class UIController {
   /**
    * Show loading screen with customizable message
    * @param {string} message - Loading message to display
-   * @param {string} pattern - Pattern being processed
+   * @param {string} pattern - Pattern being processed (not used anymore)
    */
   showLoading(message = 'กำลังประมวลผล...', pattern = '') {
     if (this.loadingElements.overlay) {
@@ -2275,37 +2374,16 @@ class UIController {
       if (this.loadingElements.message) {
         this.loadingElements.message.textContent = message;
       }
-      
-      if (this.loadingElements.pattern && pattern) {
-        this.loadingElements.pattern.textContent = `Pattern: ${pattern}`;
-      }
-      
-      if (this.loadingElements.count) {
-        this.loadingElements.count.textContent = '0 / 0';
-      }
-      
-      if (this.loadingElements.progressBar) {
-        this.loadingElements.progressBar.style.width = '0%';
-      }
     }
   }
 
   /**
-   * Update loading progress
-   * @param {number} current - Current progress count
-   * @param {number} total - Total expected count
+   * Update loading progress (simplified - no progress bar anymore)
+   * @param {number} current - Current progress count (not used)
+   * @param {number} total - Total expected count (not used)
    * @param {string} message - Optional message update
    */
   updateLoadingProgress(current, total, message = null) {
-    if (this.loadingElements.count) {
-      this.loadingElements.count.textContent = `${current.toLocaleString()} / ${total.toLocaleString()}`;
-    }
-    
-    if (this.loadingElements.progressBar && total > 0) {
-      const percentage = Math.min((current / total) * 100, 100);
-      this.loadingElements.progressBar.style.width = `${percentage}%`;
-    }
-    
     if (message && this.loadingElements.message) {
       this.loadingElements.message.textContent = message;
     }
@@ -2390,10 +2468,32 @@ class UIController {
       this.clearError();
     });
 
-    // Wire event handler for CSV export
-    this.elements.exportBtn.addEventListener('click', () => {
-      this.handleExport();
-    });
+    // Wire event handlers for export buttons
+    if (this.elements.exportCsvBtn) {
+      this.elements.exportCsvBtn.addEventListener('click', async () => {
+        console.log('CSV export button clicked');
+        try {
+          await this.handleExport();
+        } catch (error) {
+          console.error('CSV export button error:', error);
+          this.hideLoading();
+          this.showError(`CSV export failed: ${error.message}`);
+        }
+      });
+    }
+    
+    if (this.elements.exportExcelBtn) {
+      this.elements.exportExcelBtn.addEventListener('click', async () => {
+        console.log('Excel export button clicked');
+        try {
+          await this.handleExcelExport();
+        } catch (error) {
+          console.error('Excel export button error:', error);
+          this.hideLoading();
+          this.showError(`Excel export failed: ${error.message}`);
+        }
+      });
+    }
 
     // Performance monitoring controls
     const showPerfBtn = document.getElementById('show-performance-btn');
@@ -2547,9 +2647,10 @@ class UIController {
    * Displays validation error message
    * @param {string} message - Error message to display
    */
-  showError(message) {
+  showError(message, type = 'error') {
     this.elements.errorMessage.textContent = message;
-    this.elements.errorMessage.classList.add('show');
+    this.elements.errorMessage.classList.remove('show', 'error', 'info');
+    this.elements.errorMessage.classList.add('show', type);
   }
 
   /**
@@ -2802,9 +2903,19 @@ class UIController {
     }
     
     if (hasData) {
-      this.elements.exportBtn.style.display = 'block';
+      if (this.elements.exportCsvBtn) {
+        this.elements.exportCsvBtn.style.display = 'block';
+      }
+      if (this.elements.exportExcelBtn) {
+        this.elements.exportExcelBtn.style.display = 'block';
+      }
     } else {
-      this.elements.exportBtn.style.display = 'none';
+      if (this.elements.exportCsvBtn) {
+        this.elements.exportCsvBtn.style.display = 'none';
+      }
+      if (this.elements.exportExcelBtn) {
+        this.elements.exportExcelBtn.style.display = 'none';
+      }
     }
   }
 
@@ -2840,11 +2951,12 @@ class UIController {
   }
 
   /**
-   * Handle CSV export - Task 11.1 Implementation
+   * Handle CSV export - Optimized Implementation
    * Connects export button to CSVExporter (exporting all numbers with pattern types)
    * PERFORMANCE MONITORED: Tracks CSV export performance
+   * OPTIMIZED: Uses async processing for large datasets
    */
-  handleExport() {
+  async handleExport() {
     try {
       const patternGroups = state.patternManager.getAllPatternGroups();
       
@@ -2855,56 +2967,52 @@ class UIController {
       
       // Calculate total numbers for progress tracking
       const totalNumbers = patternGroups.reduce((sum, group) => sum + group.numbers.length, 0);
+      const isLargeDataset = totalNumbers > 100000;
       
-      // Show loading screen for export
-      this.showLoading('กำลังสร้างไฟล์ CSV...', `${patternGroups.length} patterns`);
-      this.updateLoadingProgress(0, totalNumbers, 'กำลังประมวลผลข้อมูลสำหรับ Export...');
+      // Show loading screen for export (simplified message)
+      this.showLoading('กำลังสร้างไฟล์ CSV...');
       
-      // Use setTimeout to allow loading screen to show
-      setTimeout(() => {
-        try {
-          // Performance monitoring: Start timing CSV export
-          const endTiming = window.performanceMonitor ? window.performanceMonitor.startTiming('csvExport') : null;
-          
-          // Simulate progress for large exports
-          let processedNumbers = 0;
-          const progressInterval = setInterval(() => {
-            processedNumbers += Math.min(100000, totalNumbers - processedNumbers);
-            this.updateLoadingProgress(processedNumbers, totalNumbers, 'กำลังสร้างไฟล์ CSV...');
-            
-            if (processedNumbers >= totalNumbers) {
-              clearInterval(progressInterval);
-            }
-          }, 50);
-          
-          // Connect export button to CSVExporter (exporting all numbers with pattern types)
-          const csvExporter = new CSVExporter();
+      try {
+        // Performance monitoring: Start timing CSV export
+        const endTiming = window.performanceMonitor ? window.performanceMonitor.startTiming('csvExport') : null;
+        
+        // Use optimized CSVExporter with async processing for large datasets
+        const csvExporter = new CSVExporter();
+        
+        if (isLargeDataset) {
+          // For large datasets, use async export with simplified progress
+          await csvExporter.exportAsync(patternGroups, (progress) => {
+            // Simplified progress - just update the message
+            this.updateLoadingProgress(0, 0, `กำลังประมวลผล ${progress.current.toLocaleString()} / ${progress.total.toLocaleString()} รายการ`);
+          });
+        } else {
+          // For small datasets, use regular export
           csvExporter.export(patternGroups);
-          
-          // Record performance metrics
-          if (endTiming) {
-            endTiming({ 
-              patterns: patternGroups.length, 
-              totalNumbers,
-              operation: 'csvExport' 
-            });
-          }
-          
-          // Hide loading screen
-          this.hideLoading();
-          
-          // Clear any existing errors
-          this.clearError();
-          
-          console.log(`CSV export completed for ${patternGroups.length} patterns with all numbers and pattern types`);
-          
-        } catch (error) {
-          // Hide loading screen on error
-          this.hideLoading();
-          console.error('Export error:', error.message);
-          this.showError(error.message);
         }
-      }, 100);
+        
+        // Record performance metrics
+        if (endTiming) {
+          endTiming({ 
+            patterns: patternGroups.length, 
+            totalNumbers,
+            operation: 'csvExport' 
+          });
+        }
+        
+        // Hide loading screen
+        this.hideLoading();
+        
+        // Clear any existing errors
+        this.clearError();
+        
+        console.log(`CSV export completed for ${patternGroups.length} patterns with ${totalNumbers} numbers`);
+        
+      } catch (error) {
+        // Hide loading screen on error
+        this.hideLoading();
+        console.error('Export error:', error.message);
+        this.showError(error.message);
+      }
       
     } catch (error) {
       // Hide loading screen on error
@@ -2912,6 +3020,405 @@ class UIController {
       console.error('Export error:', error.message);
       this.showError(error.message);
     }
+  }
+
+  /**
+   * Handle Excel export - Optimized Implementation
+   * Exports all numbers to Excel (.xlsx) format using SheetJS
+   * Uses same column structure as CSV: pattern_type, pattern, account_number
+   * OPTIMIZED: Uses batch processing and async operations for large datasets
+   */
+  async handleExcelExport() {
+    console.log('handleExcelExport called');
+    try {
+      const patternGroups = state.patternManager.getAllPatternGroups();
+      console.log('Pattern groups:', patternGroups.length);
+      
+      if (patternGroups.length === 0) {
+        this.showError('ไม่มี pattern ที่จะ export');
+        return;
+      }
+
+      // Calculate total numbers for progress tracking
+      const totalNumbers = patternGroups.reduce((sum, group) => sum + group.numbers.length, 0);
+      console.log('Total numbers to export:', totalNumbers);
+      
+      // Configuration for file splitting
+      const RECORDS_PER_FILE = 500000; // 500K records per file
+      const needsSplitting = totalNumbers > RECORDS_PER_FILE;
+      const totalFiles = Math.ceil(totalNumbers / RECORDS_PER_FILE);
+      
+      if (needsSplitting) {
+        console.log(`Large dataset detected: ${totalNumbers.toLocaleString()} records will be split into ${totalFiles} files`);
+        this.showError(`ข้อมูลมี ${totalNumbers.toLocaleString()} รายการ จะแบ่งเป็น ${totalFiles} ไฟล์ Excel (ไฟล์ละ ${RECORDS_PER_FILE.toLocaleString()} รายการ)`, 'info');
+        await new Promise(resolve => setTimeout(resolve, 3000)); // Show message for 3 seconds
+      }
+      
+      // Show loading screen for export
+      this.showLoading('กำลังสร้างไฟล์ Excel...');
+      
+      try {
+        // Check if XLSX library is available
+        if (typeof XLSX === 'undefined') {
+          throw new Error('XLSX library not loaded');
+        }
+        
+        // Process all data first with duplicate removal
+        this.updateLoadingProgress(0, 0, 'กำลังประมวลผลข้อมูล...');
+        
+        const allData = [];
+        const seenNumbers = new Set(); // Remove duplicates
+        
+        for (const group of patternGroups) {
+          for (const number of group.numbers) {
+            // Skip duplicates (same logic as CSV)
+            if (seenNumbers.has(number)) {
+              continue;
+            }
+            seenNumbers.add(number);
+            
+            allData.push([group.patternType, group.pattern, number]);
+          }
+        }
+        
+        console.log('Data processed for Excel:', allData.length, 'unique records');
+        
+        // Generate base filename with timestamp
+        const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+        const baseFilename = `account-numbers-${timestamp}`;
+        
+        if (needsSplitting) {
+          // Split into multiple files
+          for (let fileIndex = 0; fileIndex < totalFiles; fileIndex++) {
+            const startIndex = fileIndex * RECORDS_PER_FILE;
+            const endIndex = Math.min(startIndex + RECORDS_PER_FILE, allData.length);
+            const fileData = allData.slice(startIndex, endIndex);
+            
+            this.updateLoadingProgress(0, 0, `กำลังสร้างไฟล์ ${fileIndex + 1}/${totalFiles} (${fileData.length.toLocaleString()} รายการ)...`);
+            
+            // Create workbook for this chunk
+            const wb = XLSX.utils.book_new();
+            
+            // Create worksheet data
+            const wsData = [
+              ['pattern_type', 'pattern', 'account_number'], // Header row
+              ...fileData
+            ];
+            
+            // Create worksheet with optimized settings
+            const ws = XLSX.utils.aoa_to_sheet(wsData, {
+              cellStyles: false,
+              sheetStubs: false
+            });
+            
+            // Set column widths
+            ws['!cols'] = [
+              { wch: 18 }, // pattern_type
+              { wch: 12 }, // pattern  
+              { wch: 15 }  // account_number
+            ];
+            
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Account Numbers');
+            
+            // Generate filename for this part
+            const filename = `${baseFilename}-part${fileIndex + 1}of${totalFiles}.xlsx`;
+            
+            this.updateLoadingProgress(0, 0, `กำลังดาวน์โหลดไฟล์ ${fileIndex + 1}/${totalFiles}...`);
+            
+            // Download this file
+            try {
+              console.log(`Downloading file ${fileIndex + 1}/${totalFiles}:`, filename);
+              
+              XLSX.writeFile(wb, filename, {
+                bookType: 'xlsx',
+                type: 'binary',
+                cellStyles: false,
+                compression: true
+              });
+              
+              console.log(`File ${fileIndex + 1}/${totalFiles} downloaded successfully`);
+              
+              // Small delay between downloads to prevent browser issues
+              if (fileIndex < totalFiles - 1) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+              }
+              
+            } catch (downloadError) {
+              console.error(`Failed to download file ${fileIndex + 1}/${totalFiles}:`, downloadError);
+              throw new Error(`ไม่สามารถดาวน์โหลดไฟล์ที่ ${fileIndex + 1} ได้: ${downloadError.message}`);
+            }
+          }
+          
+          console.log(`All ${totalFiles} Excel files downloaded successfully`);
+          
+        } else {
+          // Single file export (less than 500K records)
+          this.updateLoadingProgress(0, 0, 'กำลังสร้างไฟล์ Excel...');
+          
+          const wb = XLSX.utils.book_new();
+          
+          // Create worksheet data
+          const wsData = [
+            ['pattern_type', 'pattern', 'account_number'], // Header row
+            ...allData
+          ];
+          
+          // Create worksheet with optimized settings
+          const ws = XLSX.utils.aoa_to_sheet(wsData, {
+            cellStyles: false,
+            sheetStubs: false
+          });
+          
+          // Set column widths
+          ws['!cols'] = [
+            { wch: 18 }, // pattern_type
+            { wch: 12 }, // pattern  
+            { wch: 15 }  // account_number
+          ];
+          
+          // Add worksheet to workbook
+          XLSX.utils.book_append_sheet(wb, ws, 'Account Numbers');
+          
+          const filename = `${baseFilename}.xlsx`;
+          
+          this.updateLoadingProgress(0, 0, 'กำลังดาวน์โหลดไฟล์...');
+          
+          // Download single file
+          console.log('Downloading single Excel file:', filename);
+          
+          XLSX.writeFile(wb, filename, {
+            bookType: 'xlsx',
+            type: 'binary',
+            cellStyles: false,
+            compression: true
+          });
+          
+          console.log('Single Excel file downloaded successfully');
+        }
+        
+        // Hide loading screen
+        this.hideLoading();
+        
+        // Clear any existing errors
+        this.clearError();
+        
+        if (needsSplitting) {
+          console.log(`Excel export completed: ${totalFiles} files with ${allData.length} total unique records`);
+          this.showError(`ดาวน์โหลดเสร็จสิ้น: ${totalFiles} ไฟล์ Excel รวม ${allData.length.toLocaleString()} รายการ`, 'success');
+        } else {
+          console.log(`Excel export completed: 1 file with ${allData.length} unique records`);
+        }
+        
+      } catch (error) {
+        // Hide loading screen on error
+        this.hideLoading();
+        console.error('Excel export processing error:', error);
+        this.showError(`Excel export failed: ${error.message}`);
+      }
+      
+    } catch (error) {
+      // Hide loading screen on error
+      this.hideLoading();
+      console.error('Excel export error:', error);
+      this.showError(`Excel export failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Process data for Excel export with optimization for large datasets
+   * @param {Array} patternGroups - Pattern groups to process
+   * @param {boolean} isLargeDataset - Whether this is a large dataset
+   * @returns {Promise<Array>} Processed data array
+   */
+  async processDataForExcel(patternGroups, isLargeDataset) {
+    const data = [];
+    const seenNumbers = new Set(); // Remove duplicates like CSV
+    const batchSize = isLargeDataset ? 10000 : 50000; // Smaller batches for large datasets
+    
+    let processedCount = 0;
+    
+    for (const group of patternGroups) {
+      const { pattern, patternType, numbers } = group;
+      
+      // Process numbers in batches to avoid blocking UI
+      for (let i = 0; i < numbers.length; i += batchSize) {
+        const batch = numbers.slice(i, i + batchSize);
+        
+        for (const number of batch) {
+          // Skip if we've already seen this account number (same as CSV logic)
+          if (seenNumbers.has(number)) {
+            continue;
+          }
+          
+          // Mark this number as seen
+          seenNumbers.add(number);
+          
+          // Same column structure as CSV: pattern_type, pattern, account_number
+          data.push({
+            pattern_type: patternType,
+            pattern: pattern,
+            account_number: number
+          });
+          
+          processedCount++;
+        }
+        
+        // Yield control to prevent UI blocking for large datasets
+        if (isLargeDataset && i % (batchSize * 2) === 0) {
+          // Update progress
+          const totalNumbers = patternGroups.reduce((sum, g) => sum + g.numbers.length, 0);
+          this.updateLoadingProgress(processedCount, totalNumbers, `ประมวลผลแล้ว ${processedCount.toLocaleString()} / ${totalNumbers.toLocaleString()} รายการ`);
+          
+          // Allow other operations to run
+          await new Promise(resolve => setTimeout(resolve, 10));
+        }
+      }
+    }
+    
+    return data;
+  }
+
+  /**
+   * Download Excel file with fallback mechanisms for large datasets
+   * @param {Object} workbook - Excel workbook object
+   * @param {string} filename - Filename for download
+   * @param {number} recordCount - Number of records
+   */
+  async downloadExcelWithFallback(workbook, filename, recordCount) {
+    try {
+      // Method 1: Try with compression first
+      console.log(`Attempting Excel download with ${recordCount.toLocaleString()} records...`);
+      
+      if (recordCount > 500000) {
+        // For very large datasets (>500k), use maximum compression
+        XLSX.writeFile(workbook, filename, { 
+          compression: true,
+          bookType: 'xlsx',
+          type: 'binary'
+        });
+      } else if (recordCount > 100000) {
+        // For large datasets (>100k), use standard compression
+        XLSX.writeFile(workbook, filename, { compression: true });
+      } else {
+        // For moderate datasets, use standard method
+        XLSX.writeFile(workbook, filename);
+      }
+      
+      console.log('Excel download successful');
+      
+    } catch (error) {
+      console.error('Excel download method 1 failed:', error);
+      
+      try {
+        // Method 2: Try manual blob creation
+        console.log('Trying manual blob creation...');
+        const wbout = XLSX.write(workbook, { 
+          bookType: 'xlsx', 
+          type: 'array',
+          compression: true 
+        });
+        
+        const blob = new Blob([wbout], { 
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+        });
+        
+        // Check blob size
+        const sizeMB = blob.size / (1024 * 1024);
+        console.log(`Excel file size: ${sizeMB.toFixed(2)} MB`);
+        
+        if (sizeMB > 100) {
+          throw new Error(`File too large: ${sizeMB.toFixed(2)} MB`);
+        }
+        
+        // Create download link
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.style.display = 'none';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        
+        console.log('Manual blob download successful');
+        
+      } catch (blobError) {
+        console.error('Manual blob creation failed:', blobError);
+        throw new Error(`Excel export failed: ${blobError.message}`);
+      }
+    }
+  }
+
+  /**
+   * Fallback to CSV export when Excel fails
+   * @param {Array} data - Data array
+   * @param {string} filename - CSV filename
+   */
+  async fallbackToCSV(data, filename) {
+    try {
+      console.log('Falling back to CSV export...');
+      
+      // Create CSV content
+      const csvRows = ['pattern_type,pattern,account_number'];
+      
+      for (const row of data) {
+        const csvRow = [
+          this.escapeCSVValue(row.pattern_type),
+          this.escapeCSVValue(row.pattern),
+          this.escapeCSVValue(row.account_number)
+        ].join(',');
+        csvRows.push(csvRow);
+      }
+      
+      const csvContent = csvRows.join('\n');
+      
+      // Create and download CSV
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      
+      link.href = url;
+      link.download = filename;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      URL.revokeObjectURL(url);
+      
+      // Show message to user
+      this.showError('Excel ไฟล์ใหญ่เกินไป ได้สร้างไฟล์ CSV แทน', 'info');
+      
+      console.log('CSV fallback successful');
+      
+    } catch (csvError) {
+      console.error('CSV fallback failed:', csvError);
+      throw new Error(`Both Excel and CSV export failed: ${csvError.message}`);
+    }
+  }
+
+  /**
+   * Escape CSV values (helper method for fallback)
+   * @param {string} value - Value to escape
+   * @returns {string} Escaped value
+   */
+  escapeCSVValue(value) {
+    if (typeof value !== 'string') {
+      value = String(value);
+    }
+    
+    if (value.includes(',') || value.includes('"') || value.includes('\n') || value.includes('\r')) {
+      const escapedValue = value.replace(/"/g, '""');
+      return `"${escapedValue}"`;
+    }
+    
+    return value;
   }
 
   /**

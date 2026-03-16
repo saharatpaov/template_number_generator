@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Compact Layout with Scroll Test</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
   <div class="container">
@@ -99,7 +101,14 @@
       <section class="results-section">
         <div class="results-header">
           <h2>ผลลัพธ์</h2>
-          <button class="btn btn-secondary">Export เป็น CSV</button>
+          <div class="export-buttons">
+            <button id="export-csv-btn" class="btn-export btn-export-csv">
+              📄 Export CSV
+            </button>
+            <button id="export-excel-btn" class="btn-export btn-export-excel">
+              📊 Export Excel
+            </button>
+          </div>
         </div>
         
         <div class="results-display">
@@ -179,6 +188,165 @@
   </div>
 
   <script>
+    // Sample data for export
+    function getAllNumbersData() {
+      const data = [];
+      const resultGroups = document.querySelectorAll('.result-group');
+      
+      resultGroups.forEach(group => {
+        const groupTitle = group.querySelector('h3').textContent;
+        const pattern = groupTitle.split(' ')[0]; // Extract pattern
+        const patternType = groupTitle.match(/\((.*?)\)/)?.[1] || 'Unknown'; // Extract pattern type
+        const numberItems = group.querySelectorAll('.number-item');
+        
+        numberItems.forEach(item => {
+          const number = item.textContent.trim().replace('🏅', '');
+          const isPremium = item.classList.contains('premium-baramee');
+          
+          // Calculate sum (simple digit sum for demo)
+          const digits = number.replace(/-/g, '').split('').map(d => parseInt(d));
+          const sum = digits.reduce((a, b) => a + b, 0);
+          
+          // Determine rating based on sum
+          let rating = 'ติดขัด';
+          if (sum >= 80) rating = 'บารมี';
+          else if (sum >= 60) rating = 'เศรษฐี';
+          else if (sum >= 40) rating = 'วาสนา';
+          else if (sum >= 20) rating = 'พอตัว';
+          
+          data.push({
+            'หมายเลขบัญชี': number,
+            'Pattern': pattern,
+            'Pattern Type': patternType,
+            'ผลรวม': sum,
+            'ระดับ': rating,
+            'Premium': isPremium ? 'Yes' : 'No'
+          });
+        });
+      });
+      
+      return data;
+    }
+
+    // CSV Export Function
+    function exportToCSV() {
+      const data = getAllNumbersData();
+      
+      if (data.length === 0) {
+        alert('ไม่มีข้อมูลสำหรับ export');
+        return;
+      }
+
+      // Create CSV content
+      const headers = Object.keys(data[0]);
+      const csvContent = [
+        // Add BOM for UTF-8
+        '\ufeff',
+        // Headers
+        headers.join(','),
+        // Data rows
+        ...data.map(row => 
+          headers.map(header => {
+            const value = row[header] || '';
+            // Escape commas and quotes
+            return `"${value.toString().replace(/"/g, '""')}"`;
+          }).join(',')
+        )
+      ].join('\n');
+
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `account-numbers-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Show success message
+      showExportMessage('CSV file exported successfully!', 'success');
+    }
+
+    // Excel Export Function
+    function exportToExcel() {
+      const data = getAllNumbersData();
+      
+      if (data.length === 0) {
+        alert('ไม่มีข้อมูลสำหรับ export');
+        return;
+      }
+
+      // Create workbook
+      const wb = XLSX.utils.book_new();
+      
+      // Create worksheet from data
+      const ws = XLSX.utils.json_to_sheet(data);
+      
+      // Set column widths
+      const colWidths = [
+        { wch: 15 }, // หมายเลขบัญชี
+        { wch: 12 }, // Pattern
+        { wch: 18 }, // Pattern Type
+        { wch: 8 },  // ผลรวม
+        { wch: 10 }, // ระดับ
+        { wch: 8 }   // Premium
+      ];
+      ws['!cols'] = colWidths;
+      
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, 'Account Numbers');
+      
+      // Generate Excel file and download
+      const fileName = `account-numbers-${new Date().toISOString().split('T')[0]}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+      
+      // Show success message
+      showExportMessage('Excel file exported successfully!', 'success');
+    }
+
+    // Show export message
+    function showExportMessage(message, type) {
+      const messageDiv = document.createElement('div');
+      messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        background: ${type === 'success' ? '#4caf50' : '#f44336'};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 10000;
+        font-weight: 600;
+        animation: slideIn 0.3s ease-out;
+      `;
+      messageDiv.textContent = message;
+      
+      document.body.appendChild(messageDiv);
+      
+      // Remove after 3 seconds
+      setTimeout(() => {
+        messageDiv.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => {
+          if (document.body.contains(messageDiv)) {
+            document.body.removeChild(messageDiv);
+          }
+        }, 300);
+      }, 3000);
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      // Export button listeners
+      const csvBtn = document.getElementById('export-csv-btn');
+      const excelBtn = document.getElementById('export-excel-btn');
+      
+      if (csvBtn) csvBtn.addEventListener('click', exportToCSV);
+      if (excelBtn) excelBtn.addEventListener('click', exportToExcel);
+    });
+
     // Number click functionality
     document.querySelectorAll('.number-item.clickable').forEach(item => {
       item.addEventListener('click', function() {
@@ -231,6 +399,60 @@
         transform: translateY(-10px);
       }
     }
+    
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
   </style>
 </body>
 </html>
+  <!-- Debug styles to make export buttons visible -->
+  <style>
+    /* Force export buttons to be visible */
+    .export-buttons {
+      background: rgba(233, 30, 99, 0.1) !important;
+      padding: 0.5rem !important;
+      border-radius: 8px !important;
+      border: 2px dashed var(--primary-pink) !important;
+      display: flex !important;
+      gap: 0.5rem !important;
+    }
+    
+    .btn-export {
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.4rem !important;
+      padding: 0.8rem 1.2rem !important;
+      font-size: 1rem !important;
+      font-weight: 600 !important;
+      border: none !important;
+      border-radius: 8px !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      white-space: nowrap !important;
+      min-width: 120px !important;
+    }
+    
+    .btn-export-csv {
+      background: linear-gradient(135deg, #f44336, #ff9800) !important;
+      color: white !important;
+    }
+    
+    .btn-export-excel {
+      background: linear-gradient(135deg, #4caf50, #66bb6a) !important;
+      color: white !important;
+    }
+    
+    .results-header {
+      background: rgba(255, 255, 255, 0.9) !important;
+      padding: 1rem !important;
+      border-radius: 8px !important;
+      border: 1px solid var(--border-color) !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      flex-wrap: wrap !important;
+      gap: 1rem !important;
+    }
+  </style>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Export Buttons Test - CSV & Excel</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Account Number Generator</h1>
+      <div class="subtitle">Export Buttons Test - CSV & Excel</div>
+    </header>
+
+    <main>
+      <!-- Pattern List Section -->
+      <section class="pattern-list-section">
+        <h2>Patterns ที่เพิ่มแล้ว</h2>
+        <div class="pattern-list">
+          
+          <div class="pattern-item">
+            <div class="pattern-info">
+              <div class="pattern-text">aaaaaaaaaa</div>
+              <div class="pattern-type">The Soloist</div>
+            </div>
+            <div class="pattern-actions">
+              <div class="pattern-count">10 numbers</div>
+              <button class="remove-pattern-btn">ลบ</button>
+            </div>
+          </div>
+
+          <div class="pattern-item">
+            <div class="pattern-info">
+              <div class="pattern-text">bbbaaaaaaa</div>
+              <div class="pattern-type">Hyphen-separated</div>
+            </div>
+            <div class="pattern-actions">
+              <div class="pattern-count">90 numbers</div>
+              <button class="remove-pattern-btn">ลบ</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Results Area with Export Buttons -->
+      <section class="results-section">
+        <div class="results-header">
+          <h2>ผลลัพธ์</h2>
+          <div class="export-buttons">
+            <button id="export-csv-btn" class="btn-export btn-export-csv">
+              📄 Export CSV
+            </button>
+            <button id="export-excel-btn" class="btn-export btn-export-excel">
+              📊 Export Excel
+            </button>
+          </div>
+        </div>
+        
+        <div class="results-display">
+          
+          <!-- Result Group 1 -->
+          <div class="result-group" data-pattern="aaaaaaaaaa" data-pattern-type="The Soloist">
+            <h3>aaaaaaaaaa (The Soloist) - 10 numbers</h3>
+            
+            <div class="numbers-grid">
+              <div class="number-item clickable" data-number="000-000-0000" data-sum="0" data-rating="ติดขัด">000-000-0000</div>
+              <div class="number-item clickable" data-number="111-111-1111" data-sum="10" data-rating="พอตัว">111-111-1111</div>
+              <div class="number-item clickable" data-number="222-222-2222" data-sum="20" data-rating="วาสนา">222-222-2222</div>
+              <div class="number-item clickable" data-number="333-333-3333" data-sum="30" data-rating="วาสนา">333-333-3333</div>
+              <div class="number-item clickable" data-number="444-444-4444" data-sum="40" data-rating="เศรษฐี">444-444-4444</div>
+              <div class="number-item clickable" data-number="555-555-5555" data-sum="50" data-rating="เศรษฐี">555-555-5555</div>
+              <div class="number-item clickable" data-number="666-666-6666" data-sum="60" data-rating="เศรษฐี">666-666-6666</div>
+              <div class="number-item clickable" data-number="777-777-7777" data-sum="70" data-rating="เศรษฐี">777-777-7777</div>
+              <div class="number-item clickable premium-baramee" data-number="888-888-8888" data-sum="80" data-rating="บารมี">
+                888-888-8888
+                <div class="main-result-badge">🏅</div>
+              </div>
+              <div class="number-item clickable premium-baramee" data-number="999-999-9999" data-sum="90" data-rating="บารมี">
+                999-999-9999
+                <div class="main-result-badge">🏅</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result Group 2 -->
+          <div class="result-group" data-pattern="bbbaaaaaaa" data-pattern-type="Hyphen-separated">
+            <h3>bbbaaaaaaa (Hyphen-separated) - 6 numbers (sample)</h3>
+            
+            <div class="numbers-grid">
+              <div class="number-item clickable" data-number="100-000-0000" data-sum="1" data-rating="ติดขัด">100-000-0000</div>
+              <div class="number-item clickable" data-number="200-000-0000" data-sum="2" data-rating="ติดขัด">200-000-0000</div>
+              <div class="number-item clickable" data-number="300-000-0000" data-sum="3" data-rating="ติดขัด">300-000-0000</div>
+              <div class="number-item clickable" data-number="400-000-0000" data-sum="4" data-rating="ติดขัด">400-000-0000</div>
+              <div class="number-item clickable" data-number="500-000-0000" data-sum="5" data-rating="ติดขัด">500-000-0000</div>
+              <div class="number-item clickable" data-number="600-000-0000" data-sum="6" data-rating="ติดขัด">600-000-0000</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2026 Saharat Paovarangkul</p>
+    </footer>
+  </div>
+
+  <script>
+    // Sample data for export
+    function getAllNumbersData() {
+      const data = [];
+      const resultGroups = document.querySelectorAll('.result-group');
+      
+      resultGroups.forEach(group => {
+        const pattern = group.dataset.pattern;
+        const patternType = group.dataset.patternType;
+        const numberItems = group.querySelectorAll('.number-item[data-number]');
+        
+        numberItems.forEach(item => {
+          data.push({
+            'หมายเลขบัญชี': item.dataset.number,
+            'Pattern': pattern,
+            'Pattern Type': patternType,
+            'ผลรวม': item.dataset.sum,
+            'ระดับ': item.dataset.rating,
+            'Premium': item.classList.contains('premium-baramee') ? 'Yes' : 'No'
+          });
+        });
+      });
+      
+      return data;
+    }
+
+    // CSV Export Function
+    function exportToCSV() {
+      const data = getAllNumbersData();
+      
+      if (data.length === 0) {
+        alert('ไม่มีข้อมูลสำหรับ export');
+        return;
+      }
+
+      // Create CSV content
+      const headers = Object.keys(data[0]);
+      const csvContent = [
+        // Add BOM for UTF-8
+        '\ufeff',
+        // Headers
+        headers.join(','),
+        // Data rows
+        ...data.map(row => 
+          headers.map(header => {
+            const value = row[header] || '';
+            // Escape commas and quotes
+            return `"${value.toString().replace(/"/g, '""')}"`;
+          }).join(',')
+        )
+      ].join('\n');
+
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `account-numbers-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Show success message
+      showExportMessage('CSV file exported successfully!', 'success');
+    }
+
+    // Excel Export Function
+    function exportToExcel() {
+      const data = getAllNumbersData();
+      
+      if (data.length === 0) {
+        alert('ไม่มีข้อมูลสำหรับ export');
+        return;
+      }
+
+      // Create workbook
+      const wb = XLSX.utils.book_new();
+      
+      // Create worksheet from data
+      const ws = XLSX.utils.json_to_sheet(data);
+      
+      // Set column widths
+      const colWidths = [
+        { wch: 15 }, // หมายเลขบัญชี
+        { wch: 12 }, // Pattern
+        { wch: 18 }, // Pattern Type
+        { wch: 8 },  // ผลรวม
+        { wch: 10 }, // ระดับ
+        { wch: 8 }   // Premium
+      ];
+      ws['!cols'] = colWidths;
+      
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, 'Account Numbers');
+      
+      // Generate Excel file and download
+      const fileName = `account-numbers-${new Date().toISOString().split('T')[0]}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+      
+      // Show success message
+      showExportMessage('Excel file exported successfully!', 'success');
+    }
+
+    // Show export message
+    function showExportMessage(message, type) {
+      const messageDiv = document.createElement('div');
+      messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        background: ${type === 'success' ? '#4caf50' : '#f44336'};
+        color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 10000;
+        font-weight: 600;
+        animation: slideIn 0.3s ease-out;
+      `;
+      messageDiv.textContent = message;
+      
+      // Add animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+      `;
+      document.head.appendChild(style);
+      
+      document.body.appendChild(messageDiv);
+      
+      // Remove after 3 seconds
+      setTimeout(() => {
+        messageDiv.style.animation = 'slideIn 0.3s ease-out reverse';
+        setTimeout(() => {
+          document.body.removeChild(messageDiv);
+          document.head.removeChild(style);
+        }, 300);
+      }, 3000);
+    }
+
+    // Event Listeners
+    document.getElementById('export-csv-btn').addEventListener('click', exportToCSV);
+    document.getElementById('export-excel-btn').addEventListener('click', exportToExcel);
+
+    // Number click functionality
+    document.querySelectorAll('.number-item.clickable').forEach(item => {
+      item.addEventListener('click', function() {
+        const number = this.dataset.number;
+        const sum = this.dataset.sum;
+        const rating = this.dataset.rating;
+        alert(`หมายเลข: ${number}\nผลรวม: ${sum}\nระดับ: ${rating}`);
+      });
+    });
+
+    // Remove pattern functionality
+    document.querySelectorAll('.remove-pattern-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const patternItem = this.closest('.pattern-item');
+        patternItem.style.animation = 'fadeOut 0.3s ease-out forwards';
+        setTimeout(() => {
+          patternItem.remove();
+        }, 300);
+      });
+    });
+  </script>
+
+  <style>
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+    }
+  </style>
+</body>
+</html>

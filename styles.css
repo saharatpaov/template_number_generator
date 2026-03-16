@@ -192,7 +192,7 @@ section h2 {
   border-top: 4px solid var(--white);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin: 0 auto 1rem;
+  margin: 0 auto 1.5rem;
 }
 
 @keyframes spin {
@@ -208,31 +208,7 @@ section h2 {
 
 .loading-message {
   font-size: 1rem;
-  margin-bottom: 1.5rem;
   opacity: 0.9;
-}
-
-.loading-progress {
-  width: 100%;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 1rem;
-}
-
-.loading-progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--primary-pink), var(--accent-orange));
-  width: 0%;
-  transition: width 0.3s ease;
-}
-
-.loading-stats {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  opacity: 0.8;
 }
 /* Lucky Number Popup */
 .lucky-overlay {
@@ -632,13 +608,23 @@ small {
 
 /* Error Messages */
 .error-message {
-  background: #ffebee;
-  color: #c62828;
   padding: 1rem;
   border-radius: 8px;
   border-left: 4px solid #f44336;
   margin-top: 1rem;
   display: none;
+}
+
+.error-message.error {
+  background: #ffebee;
+  color: #c62828;
+  border-left-color: #f44336;
+}
+
+.error-message.info {
+  background: #e3f2fd;
+  color: #1565c0;
+  border-left-color: #2196f3;
 }
 
 .error-message.show {
@@ -791,7 +777,7 @@ small {
   font-size: 1rem;
 }
 
-/* Results Display - Compact with Scroll */
+/* Results Header with Export Buttons */
 .results-header {
   display: flex;
   justify-content: space-between;
@@ -806,6 +792,47 @@ small {
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
+}
+
+/* Export Buttons Group */
+.export-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-export {
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.btn-export-csv {
+  background: linear-gradient(135deg, var(--secondary-red), var(--accent-orange));
+  color: var(--white);
+}
+
+.btn-export-csv:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+}
+
+.btn-export-excel {
+  background: linear-gradient(135deg, #4caf50, #66bb6a);
+  color: var(--white);
+}
+
+.btn-export-excel:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
 }
 
 .results-display {
@@ -1073,6 +1100,19 @@ footer {
     font-size: 0.7rem;
   }
 
+/* Mobile Export Buttons */
+@media (max-width: 768px) {
+  .export-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-export {
+    width: 100%;
+    justify-content: center;
+    padding: 0.8rem 1rem;
+  }
+
   /* Results Header Mobile - Compact */
   .results-header {
     flex-direction: column;
@@ -1280,5 +1320,59 @@ footer {
   
   .results-table {
     display: table;
+  }
+}
+/* Export Buttons Group */
+.export-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-export {
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.btn-export-csv {
+  background: linear-gradient(135deg, var(--secondary-red), var(--accent-orange));
+  color: var(--white);
+}
+
+.btn-export-csv:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+}
+
+.btn-export-excel {
+  background: linear-gradient(135deg, #4caf50, #66bb6a);
+  color: var(--white);
+}
+
+.btn-export-excel:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+/* Mobile Export Buttons */
+@media (max-width: 768px) {
+  .export-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .btn-export {
+    width: 100%;
+    justify-content: center;
+    padding: 0.8rem 1rem;
   }
 }
